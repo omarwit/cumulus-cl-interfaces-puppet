@@ -1,57 +1,33 @@
+require 'puppet/parameter/boolean'
 Puppet::Type.newtype(:cumulus_interface) do
-  @doc = "Config front panel ports, SVI, loopback,
+  desc 'Config front panel ports, SVI, loopback,
   mgmt ports on Cumulus Linux. To configure a bond use the
   cumulus_bond module. To configure a bridge interface use
   the cumulus_bridge module.
-  "
-  newproperty(:ensure) do
-    desc 'Reflects state of the interface. if "insync" do nothing'
-
-    # default setting set to what it "should be, which is in sync"
-    defaultto :insync
-
-    # retrieve function gets current interface config
-    # it compares it with the desired state. if there
-    # is a different the desired state overwrites the
-    # current config
-    def retrieve
-      prov = @resource.provider
-      if prov && prov.respond_to?(:config_changed?)
-        result = @resource.provider.config_changed?
-      else
-        errormsg = 'unable to find a provider for cumulus_interface ' \
-          'that has a "config_changed?" function'
-        fail Puppet::DevError, errormsg
-      end
-     result ? :outofsync : :insync
-
-     newvalue :outofsync
-     newvalue :insync do
-       prov = @resource.provider
-       if prov && prov.respond_to?(:update_config)
-         prov.update_config
-       else
-         errormsg = 'unable to find a provider for cumulus_interface ' \
-          'that has an "update_config" function'
-       end
-       nil
-     end
+  '
+  ensurable do
+    newvalue(:outofsync) do
+    end
+    newvalue(:insync) do
+      provider.update_config
+    end
+    defaultto do
+      :insync
     end
   end
 
   newparam(:name) do
     desc 'interface name'
-    isnamevar
   end
 
   newparam(:ipv4) do
-    @doc='list of ipv4 addresses
+    desc 'list of ipv4 addresses
     ip address must be in CIDR format and subnet mask included
     Example: 10.1.1.1/30'
   end
 
   newparam(:ipv6) do
-    @doc='list of ipv6 addresses
+    desc 'list of ipv6 addresses
     ip address must be in CIDR format and subnet mask included
     Example: 10:1:1::1/127'
   end
@@ -62,16 +38,11 @@ Puppet::Type.newtype(:cumulus_interface) do
 
   newparam(:addr_method) do
     desc 'address assignment method'
-    validate do |value|
-      unless value =~ /dhcp|loopback/
-        raise ArgumentError,
-          "%s entered. acceptable options are 'dhcp' or 'loopback'" % value
-      end
-    end
+    newvalues(:dhcp, :loopback)
   end
 
   newparam(:speed) do
-    desc 'link speed in MB. Example '1000' means 1G'
+    desc 'link speed in MB. Example "1000" means 1G'
   end
 
   newparam(:mtu) do
@@ -100,12 +71,12 @@ Puppet::Type.newtype(:cumulus_interface) do
   end
 
   newparam(:mstpctl_portnetwork) do
-    @doc='configures bridge assurance. Ensure that port is in vlan
+    desc 'configures bridge assurance. Ensure that port is in vlan
     aware mode'
   end
 
   newparam(:mstpctl_bpduguard) do
-    @doc='configures bpdu guard. Ensure that the port is in vlan
+    desc 'configures bpdu guard. Ensure that the port is in vlan
     aware mode'
   end
 
@@ -116,7 +87,7 @@ Puppet::Type.newtype(:cumulus_interface) do
   end
 
   newparam(:clagd_priority) do
-    @doc='determines which switch is the primary role. The lower priority
+    desc 'determines which switch is the primary role. The lower priority
     switch will assume the primary role. Range can be between 0-65535'
   end
 
@@ -125,11 +96,16 @@ Puppet::Type.newtype(:cumulus_interface) do
   end
 
   newparam(:clagd_sys_mac) do
-    @doc='clagd system mac. Must the same across both Clag switches.
+    desc 'clagd system mac. Must the same across both Clag switches.
     range must be with 44:38:38:ff'
   end
 
-  newparam(:clag_args) do
+  newparam(:clagd_args) do
     desc 'additional Clag parameters'
+  end
+
+  # require that the directory specified by location exists
+  autorequire(:file) do
+    [@parameters[:location].value]
   end
 end
