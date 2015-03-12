@@ -1,5 +1,5 @@
 require 'spec_helper'
-
+require 'pry'
 cl_iface = Puppet::Type.type(:cumulus_interface)
 
 describe cl_iface do
@@ -41,5 +41,8 @@ describe cl_iface do
     params.each do |param|
       expect(cl_iface.parameters).to be_include(param)
     end
+  end
+  it 'should have some dependencies on directory existence' do
+    expect(cl_iface.instance_variable_get(:@autorequires).keys().should eq [:file])
   end
 end
