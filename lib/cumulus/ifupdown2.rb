@@ -90,6 +90,7 @@ class Ifupdown2Config
     else
       ifupdown_value = resource_value
     end
+    # ifquery uses dash not underscore to define attributes
     attr.sub! '_' , '-'
     configattr = (suffix.nil?) ? attr : "#{suffix}-#{attr}"
     @confighash['config'][configattr] = ifupdown_value
@@ -120,8 +121,10 @@ class Ifupdown2Config
   # convert hash to text using ifquery
   # write to interfaces file
   def write_config
+    Puppet.debug "update config for #{@resource[:name]}"
     intf = hash_to_if
     filepath = @resource[:location] + "/" +  @resource[:name]
+    Puppet.debug "file location: #{filepath}"
     begin
       ifacefile = File.open(filepath, "w")
       ifacefile.write(intf)

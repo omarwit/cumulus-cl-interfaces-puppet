@@ -129,4 +129,5 @@ Puppet::Type.newtype(:cumulus_interface) do
   newparam(:clagd_args) do
     desc 'additional Clag parameters'
   end
+
 end
