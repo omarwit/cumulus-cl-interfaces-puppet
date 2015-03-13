@@ -5,7 +5,9 @@ provider_resource = Puppet::Type.type(:cumulus_interface)
 provider_class = provider_resource.provider(:ruby)
 
 describe provider_class do
-  before(:all) do
+  before do
+    # block io.open action to allow ifquery calls
+    allow(IO).to receive(:popen)
     # this is not a valid entry to use in a real scenario..
     # only designed for testing
     @resource = provider_resource.new(
@@ -22,6 +24,37 @@ describe provider_class do
       mstpctl_portnetwork: false,
     )
     @provider = provider_class.new(@resource)
+  end
+
+  context 'config changed' do
+    before do
+      @loc_resource = provider_resource.new(
+        name: 'swp1',
+        vids: ['1-10', '20'])
+    end
+    context 'config has changed' do
+      before do
+        current_hash = "[{\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
+        mock_ifquery = double()
+        allow(mock_ifquery).to receive(:read).and_return(current_hash)
+        allow(IO).to receive(:popen).and_yield(mock_ifquery)
+        @loc_provider = provider_class.new(@loc_resource)
+      end
+      subject { @loc_provider.config_changed? }
+      it { is_expected.to be true }
+    end
+
+    context 'config has not changed' do
+      before do
+        current_hash = "[{\"auto\":true, \"addr_method\":null,\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"bridge-vids\":\"1-10 20\"}}]"
+        mock_ifquery = double()
+        allow(mock_ifquery).to receive(:read).and_return(current_hash)
+        allow(IO).to receive(:popen).and_yield(mock_ifquery)
+        @loc_provider = provider_class.new(@loc_resource)
+      end
+      subject { @loc_provider.config_changed? }
+      it { is_expected.to be false }
+    end
   end
 
   context 'desired config hash' do

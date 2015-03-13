@@ -10,7 +10,7 @@ class Ifupdown2Config
       "name" => resource[:name],
       "config" => {}
     }
-    if_to_hash
+    @currenthash = if_to_hash
   end
 
   ##
@@ -22,7 +22,7 @@ class Ifupdown2Config
     IO.popen("/sbin/ifquery #{@resource[:name]} -o json") do |ifquery|
       json = ifquery.read
     end
-    @currenthash = JSON.parse(json)[0]
+    JSON.parse(json)[0]
   rescue Exception => ex
     Puppet.warning("ifquery failed: #{ex}")
   end
