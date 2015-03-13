@@ -5,12 +5,24 @@ Puppet::Type.newtype(:cumulus_interface) do
   cumulus_bond module. To configure a bridge interface use
   the cumulus_bridge module.
   '
+  # helps set parameter type to integer`
+  def munge_integer(value)
+    Integer(value)
+  rescue ArgumentError
+    fail("munge_integer only takes integers")
+  end
+
   ensurable do
     newvalue(:outofsync) do
     end
     newvalue(:insync) do
       provider.update_config
     end
+    def retrieve
+      result = provider.config_changed?
+      result ? :outofsync : :insync
+    end
+
     defaultto do
       :insync
     end
@@ -43,10 +55,16 @@ Puppet::Type.newtype(:cumulus_interface) do
 
   newparam(:speed) do
     desc 'link speed in MB. Example "1000" means 1G'
+    munge do |value|
+      @resource.munge_integer(value)
+    end
   end
 
   newparam(:mtu) do
     desc 'link mtu. Can be 1500 to 9000 KBs'
+    munge do |value|
+      @resource.munge_integer(value)
+    end
   end
 
   newparam(:virtual_ip) do
@@ -63,6 +81,9 @@ Puppet::Type.newtype(:cumulus_interface) do
 
   newparam(:pvid) do
     desc 'vlan transmitted untagged across the link (native vlan)'
+    munge do |value|
+      @resource.munge_integer(value)
+    end
   end
 
   newparam(:location) do
@@ -70,12 +91,14 @@ Puppet::Type.newtype(:cumulus_interface) do
     defaultto '/etc/network/interfaces.d'
   end
 
-  newparam(:mstpctl_portnetwork) do
+  newparam(:mstpctl_portnetwork, :boolean => true,
+          :parent => Puppet::Parameter::Boolean) do
     desc 'configures bridge assurance. Ensure that port is in vlan
     aware mode'
   end
 
-  newparam(:mstpctl_bpduguard) do
+  newparam(:mstpctl_bpduguard, :boolean => true,
+          :parent => Puppet::Parameter::Boolean) do
     desc 'configures bpdu guard. Ensure that the port is in vlan
     aware mode'
   end
@@ -89,6 +112,9 @@ Puppet::Type.newtype(:cumulus_interface) do
   newparam(:clagd_priority) do
     desc 'determines which switch is the primary role. The lower priority
     switch will assume the primary role. Range can be between 0-65535'
+    munge do |value|
+      @resource.munge_integer(value)
+    end
   end
 
   newparam(:clagd_peer_ip) do
@@ -102,10 +128,5 @@ Puppet::Type.newtype(:cumulus_interface) do
 
   newparam(:clagd_args) do
     desc 'additional Clag parameters'
-  end
-
-  # require that the directory specified by location exists
-  autorequire(:file) do
-    [@parameters[:location].value]
   end
 end
