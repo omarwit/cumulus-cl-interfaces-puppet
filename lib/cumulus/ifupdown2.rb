@@ -4,11 +4,11 @@ class Ifupdown2Config
   def initialize(resource)
     @resource = resource
     @confighash = {
-      :addr_family => nil,
-      :addr_method => nil,
-      :auto => true,
-      :name => resource[:name],
-      :config => {}
+      "addr_family" => nil,
+      "addr_method" => nil,
+      "auto" => true,
+      "name" => resource[:name],
+      "config" => {}
     }
     if_to_hash
   end
@@ -22,7 +22,7 @@ class Ifupdown2Config
     IO.popen("/sbin/ifquery #{@resource[:name]} -o json") do |ifquery|
       json = ifquery.read
     end
-    @currenthash = JSON.parse(json, :symbolize_names => true)[0]
+    @currenthash = JSON.parse(json)[0]
   rescue Exception => ex
     Puppet.warning("ifquery failed: #{ex}")
   end
@@ -54,8 +54,8 @@ class Ifupdown2Config
   def update_addr_method
     unless @resource[:addr_method].nil?
       Puppet.info "updating address method"
-      @confighash[:addr_method] = @resource[:addr_method]
-      @confighash[:addr_family] = "inet"
+      @confighash["addr_method"] = @resource[:addr_method]
+      @confighash["addr_family"] = "inet"
     end
 
   end
@@ -71,23 +71,45 @@ class Ifupdown2Config
       addresslist += @resource[:ipv6].join(' ')
     end
     unless addresslist.empty?
-      @confighash[:config][:address] = addresslist
+      @confighash["config"]["address"] = addresslist
     end
   end
 
   def update_attr(attr, suffix=nil)
+    resource_value = @resource[attr.to_sym]
+    ifupdown_value = ''
+    if resource_value.nil?
+      return
+    end
+    if resource_value == true
+      ifupdown_value = 'yes'
+    elsif resource_value ==  false
+      ifupdown_value = 'no'
+    elsif resource_value.kind_of?(Array)
+      ifupdown_value = resource_value.join(' ')
+    else
+      ifupdown_value = resource_value
+    end
+    attr.sub! '_' , '-'
+    configattr = (suffix.nil?) ? attr : "#{suffix}-#{attr}"
+    @confighash['config'][configattr] = ifupdown_value
   end
 
   # updates alias name in confighash
   def update_alias_name
     unless @resource[:alias_name].nil?
       Puppet.debug "updating alias #{@resource[:name]}"
-      @confighash[:config][:alias] = @resource[:alias_name]
+      @confighash["config"]["alias"] = @resource[:alias_name]
     end
   end
 
   # updates vrr config in config hash
   def update_vrr
+    unless @resource[:virtual_ip].nil?
+      vrrstring = @resource[:virtual_mac] + ' ' + @resource[:virtual_ip]
+      @confighash["config"]["address-virtual"] = vrrstring
+      Puppet.debug "updating vrr config #{vrrstring}"
+    end
   end
 
   ## comparision
