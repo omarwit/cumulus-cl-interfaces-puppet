@@ -61,10 +61,11 @@ class Ifupdown2Config
   end
 
   def update_address
-    addresslist = []
+    addresslist = ''
     unless @resource[:ipv4].nil?
       Puppet.debug "updating ipv4 info #{@resource[:name]}"
       addresslist +=  @resource[:ipv4].join(' ')
+      addresslist += ' '
     end
     unless @resource[:ipv6].nil?
       Puppet.debug "updating ipv6 info #{@resource[:name]}"
