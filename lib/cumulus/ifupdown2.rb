@@ -88,7 +88,7 @@ class Ifupdown2Config
     elsif resource_value.kind_of?(Array)
       ifupdown_value = resource_value.join(' ')
     else
-      ifupdown_value = resource_value
+      ifupdown_value = resource_value.to_s
     end
     # ifquery uses dash not underscore to define attributes
     attr.sub! '_' , '-'
@@ -102,6 +102,15 @@ class Ifupdown2Config
       Puppet.debug "updating alias #{@resource[:name]}"
       @confighash["config"]["alias"] = @resource[:alias_name]
     end
+  end
+
+  def update_speed
+    if @resource[:speed].nil?
+      return
+    end
+    Puppet.debug "configuring speed #{@resource[:name]}"
+    @confighash['config']['link-speed'] = @resource[:speed].to_s
+    @confighash['config']['link-duplex'] = 'full'
   end
 
   # updates vrr config in config hash
@@ -121,7 +130,7 @@ class Ifupdown2Config
   # convert hash to text using ifquery
   # write to interfaces file
   def write_config
-    Puppet.debug "update config for #{@resource[:name]}"
+    Puppet.info "write config for #{@resource[:name]}"
     intf = hash_to_if
     filepath = @resource[:location] + "/" +  @resource[:name]
     Puppet.debug "file location: #{filepath}"
