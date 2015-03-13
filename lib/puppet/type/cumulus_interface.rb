@@ -164,5 +164,9 @@ Puppet::Type.newtype(:cumulus_interface) do
         raise Puppet::Error, 'Clagd must be enabled for clagd_args to be active'
       end
     end
+    if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
+      raise Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
+      configured together'
+    end
   end
 end
