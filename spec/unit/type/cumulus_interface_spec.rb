@@ -42,4 +42,39 @@ describe cl_iface do
       expect(cl_iface.parameters).to be_include(param)
     end
   end
+
+  context 'validation' do
+    context 'clag parameters' do
+      context 'if not all clag parameters are set' do
+        it { expect { cl_iface.new(:name => 'swp1',
+                   :clagd_enable => 'yes') }.to raise_error }
+      end
+      context 'if not configured' do
+        it { expect { cl_iface.new(:name => 'swp1') }.to_not raise_error }
+      end
+      context 'if all are configured' do
+        it { expect { cl_iface.new(:name => 'swp1',
+                              :clagd_enable => true,
+                              :clagd_priority => 2000,
+                              :clagd_sys_mac => '44:38:38:ff:00:11',
+                              :clagd_peer_ip => '10.1.1.1/24') }.to_not raise_error }
+      end
+      context 'if clagd_args is specified' do
+        context 'and clagd_enable' do
+          context ' is not set' do
+            it { expect { cl_iface.new(:name => 'swp1',
+                                       :clagd_args => '--vm') }.to raise_error }
+          end
+          context 'is set' do
+              it { expect {
+                cl_iface.new(:name => 'swp1', :clagd_enable => true,
+                             :clagd_priority => 2000,
+                             :clagd_sys_mac => '44:38:38:ff:00:11',
+                             :clagd_peer_ip => '10.1.1.1/24',
+                             :clagd_args => '--vm') }.to_not raise_error }
+          end
+        end
+      end
+    end
+  end
 end
