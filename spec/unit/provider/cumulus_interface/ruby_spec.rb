@@ -57,8 +57,6 @@ describe provider_class do
     end
   end
 
-
-
   context 'desired config hash' do
     let(:confighash) { @provider.instance_variable_get("@config").confighash }
     before  do
