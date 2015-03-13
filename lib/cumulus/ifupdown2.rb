@@ -54,7 +54,7 @@ class Ifupdown2Config
   def update_addr_method
     unless @resource[:addr_method].nil?
       Puppet.info "updating address method"
-      @confighash["addr_method"] = @resource[:addr_method]
+      @confighash["addr_method"] = @resource[:addr_method].to_s
       @confighash["addr_family"] = "inet"
     end
 
