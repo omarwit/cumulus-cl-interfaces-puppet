@@ -1,26 +1,8 @@
 require 'puppet/parameter/boolean'
+require 'cumulus/utils'
 Puppet::Type.newtype(:cumulus_bridge) do
   desc 'Config cumulus bridge interface'
-
-  # helps set parameter type to integer`
-  def munge_integer(value)
-    Integer(value)
-  rescue ArgumentError
-    fail("munge_integer only takes integers")
-  end
-
-  def munge_array(value)
-    return_value = value
-    msg = 'should be array not comma separated string'
-    if value.class == String
-      raise ArgumentError, msg if value.include?(',')
-      return_value = [value]
-    end
-    if value.class != Array
-      raise ArgumentError 'should be array'
-    end
-    return_value
-  end
+  include Cumulus::Utils
 
   ensurable do
     newvalue(:outofsync) do

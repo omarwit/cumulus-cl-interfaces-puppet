@@ -1,3 +1,4 @@
+require 'cumulus/utils'
 require 'puppet/parameter/boolean'
 Puppet::Type.newtype(:cumulus_interface) do
   desc 'Config front panel ports, SVI, loopback,
@@ -5,25 +6,7 @@ Puppet::Type.newtype(:cumulus_interface) do
   cumulus_bond module. To configure a bridge interface use
   the cumulus_bridge module.
   '
-  # helps set parameter type to integer`
-  def munge_integer(value)
-    Integer(value)
-  rescue ArgumentError
-    fail("munge_integer only takes integers")
-  end
-
-  def munge_array(value)
-    return_value = value
-    msg = 'should be array not comma separated string'
-    if value.class == String
-      raise ArgumentError, msg if value.include?(',')
-      return_value = [value]
-    end
-    if value.class != Array
-      raise ArgumentError 'should be array'
-    end
-    return_value
-  end
+  include Cumulus::Utils
 
   ensurable do
     newvalue(:outofsync) do
