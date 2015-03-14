@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'pry-debugger'
+require 'pry'
 
-provider_resource = Puppet::Type.type(:cumulus_interface)
+provider_resource = Puppet::Type.type(:cumulus_bridge)
 provider_class = provider_resource.provider(:ruby)
 
 describe provider_class do
@@ -16,13 +16,13 @@ describe provider_class do
       speed: 1000,
       ipv4: ['10.1.1.1/24'],
       ipv6: ['10:1:1::1/127'],
-      addr_method: 'loopback',
+      addr_method: 'dhcp',
       alias_name: 'my int description',
       virtual_ip: '10.1.1.1/24',
       virtual_mac: '00:00:5e:00:00:01',
-      mstpctl_bpduguard: true,
-      mstpctl_portnetwork: false,
-      mtu: 9000
+      mstpctl_treeprio: 4096,
+      mtu: 9000,
+      ports: ['swp1-3', 'bond0']
     )
     @provider = provider_class.new(@resource)
   end
@@ -38,12 +38,12 @@ describe provider_class do
   context 'config changed' do
     before do
       @loc_resource = provider_resource.new(
-        name: 'swp1',
-        vids: ['1-10', '20'])
+        name: 'br0',
+        ports: ['swp1-3'])
     end
     context 'config has changed' do
       before do
-        current_hash = "[{\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
+        current_hash = "[{\"addr_family\":null,\"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-4\"}}]"
         mock_ifquery = double()
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
@@ -55,7 +55,8 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
-        current_hash = "[{\"auto\":true, \"addr_method\":null,\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"bridge-vids\":\"1-10 20\"}}]"
+        current_hash = "[{\"auto\":true, \"addr_method\":null,\"addr_family\":null," +
+        "\"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-3\",\"bridge-stp\":\"yes\"}}]"
         mock_ifquery = double()
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
@@ -70,6 +71,10 @@ describe provider_class do
     let(:confighash) { @provider.instance_variable_get("@config").confighash }
     before  do
       @provider.build_desired_config
+    end
+    context 'bridge members' do
+      subject { confighash['config']['bridge-ports'] }
+      it { is_expected.to eq "glob swp1-3 bond0" }
     end
     context 'bridge options' do
       subject { confighash['config']['bridge-vids'] }
@@ -89,7 +94,7 @@ describe provider_class do
     end
     context 'addr_method' do
       subject { confighash['addr_method'] }
-      it { is_expected.to eq 'loopback' }
+      it { is_expected.to eq 'dhcp' }
     end
     context 'addr_family' do
       subject { confighash['addr_family'] }
@@ -103,16 +108,8 @@ describe provider_class do
       subject { confighash['config']['address-virtual'] }
       it { is_expected.to eq '00:00:5e:00:00:01 10.1.1.1/24' }
     end
-    context 'generic attr that is a true bool' do
-      subject { confighash['config']['mstpctl-bpduguard'] }
-      it { is_expected.to eq 'yes' }
-    end
-    context 'generic attr is a false bool' do
-      subject { confighash['config']['mstpctl-portnetwork'] }
-      it { is_expected.to eq 'no' }
-    end
-    context 'mtu' do
-      subject {confighash['config']['mtu'] }
+    context 'mtu config' do
+      subject { confighash['config']['mtu']}
       it { is_expected.to eq '9000' }
     end
   end

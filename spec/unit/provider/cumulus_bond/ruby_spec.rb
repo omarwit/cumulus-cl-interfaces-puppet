@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'pry-debugger'
 
-provider_resource = Puppet::Type.type(:cumulus_interface)
+provider_resource = Puppet::Type.type(:cumulus_bond)
 provider_class = provider_resource.provider(:ruby)
 
 describe provider_class do
@@ -13,16 +13,15 @@ describe provider_class do
     @resource = provider_resource.new(
       name: 'swp1',
       vids: ['1-10', '20'],
-      speed: 1000,
       ipv4: ['10.1.1.1/24'],
       ipv6: ['10:1:1::1/127'],
-      addr_method: 'loopback',
       alias_name: 'my int description',
       virtual_ip: '10.1.1.1/24',
       virtual_mac: '00:00:5e:00:00:01',
       mstpctl_bpduguard: true,
       mstpctl_portnetwork: false,
-      mtu: 9000
+      mtu: 9000,
+      slaves: ['swp1-3']
     )
     @provider = provider_class.new(@resource)
   end
@@ -75,25 +74,9 @@ describe provider_class do
       subject { confighash['config']['bridge-vids'] }
       it { is_expected.to eq "1-10 20" }
     end
-    context 'link speed options' do
-      subject { confighash['config']['link-speed'] }
-      it { is_expected.to eq "1000" }
-    end
-    context 'link duplex options' do
-      subject { confighash['config']['link-duplex'] }
-      it { is_expected.to eq 'full' }
-    end
     context 'address options' do
       subject { confighash['config']['address'] }
       it { is_expected.to eq '10.1.1.1/24 10:1:1::1/127' }
-    end
-    context 'addr_method' do
-      subject { confighash['addr_method'] }
-      it { is_expected.to eq 'loopback' }
-    end
-    context 'addr_family' do
-      subject { confighash['addr_family'] }
-      it { is_expected.to eq 'inet' }
     end
     context 'interface description - alias' do
       subject { confighash['config']['alias'] }
