@@ -132,7 +132,7 @@ Puppet::Type.newtype(:cumulus_bridge) do
   end
 
   validate do
-    unless self[:ports].nil?
+    if self[:ports].nil?
       raise Puppet::Error, 'ports list required'
     end
 
