@@ -26,6 +26,14 @@ describe provider_class do
     @provider = provider_class.new(@resource)
   end
 
+  context 'operating system confine' do
+    subject do
+      provider_class.confine_collection.summary[:variable][:operatingsystem]
+    end
+    it { is_expected.to eq ['cumulus_linux'] }
+  end
+
+
   context 'config changed' do
     before do
       @loc_resource = provider_resource.new(
