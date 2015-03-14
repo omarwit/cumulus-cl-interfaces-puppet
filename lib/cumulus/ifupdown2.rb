@@ -123,6 +123,19 @@ class Ifupdown2Config
     end
   end
 
+  def update_members(attrname, ifupdown_attr)
+    result = []
+    @resource[attrname.to_sym].each do |port_entry|
+      if port_entry.match('-')
+        final_port_entry = 'glob ' + port_entry
+      else
+        final_port_entry = port_entry
+      end
+      result.push(final_port_entry)
+    end
+    @confighash['config'][ifupdown_attr] = result.join(' ')
+  end
+
   ## comparision
   def ==(another_config)
     @confighash == another_config.confighash
