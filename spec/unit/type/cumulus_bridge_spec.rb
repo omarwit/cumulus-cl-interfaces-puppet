@@ -39,6 +39,19 @@ describe cl_iface do
     end
   end
 
+  context 'defaults for' do
+    before do
+      @bondtype = cl_iface.new(:name => 'br0',
+                               :ports => ['bond0-2'])
+    end
+    {'stp' => true}.each do |k, v |
+       context k do
+       it { expect(@bondtype.value(k.to_sym)).to eq v }
+     end
+     end
+  end
+
+
   context 'validation' do
     context 'ports parameter' do
       context 'if not set' do

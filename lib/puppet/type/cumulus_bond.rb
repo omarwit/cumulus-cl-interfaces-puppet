@@ -91,37 +91,9 @@ Puppet::Type.newtype(:cumulus_bond) do
     aware mode'
   end
 
-  newparam(:clagd_enable, :boolean => true,
-           :parent => Puppet::Parameter::Boolean) do
-    desc 'enable CLAG on the interface. Interface must be in vlan \
-    aware mode. clagd_enable, clagd_priority, clagd_peer_ip, clagd_sys_mac must be
-    configured together'
-  end
-
-  newparam(:clagd_priority) do
-    desc 'determines which switch is the primary role. The lower priority
-    switch will assume the primary role. Range can be between 0-65535.
-    clagd_enable, clagd_priority, clagd_peer_ip and clagd_sys_mac must be configured
-    together'
-    munge do |value|
-      @resource.munge_integer(value)
-    end
-  end
-
-  newparam(:clagd_peer_ip) do
-    desc 'clagd peerlink adjacent port IP. clagd_enable, clagd_peer_ip, clagd_sys_mac
-    and clagd_sys_mac must be configured together'
-  end
-
-  newparam(:clagd_sys_mac) do
-    desc 'clagd system mac. Must the same across both Clag switches.
-    range should start with 44:38:38:ff. clagd_enable, clagd_peer_ip,
-    clagd_sys_mac, clagd_priority must be configured together'
-  end
-
-  newparam(:clagd_args) do
-    desc 'additional Clag parameters. must be configured with other clagd parameters.
-    it is optional'
+  newparam(:clagd_id) do
+    desc 'Define which bond is in clag. the ID must the
+    same for the corresponding bond on the adjacent switch'
   end
 
   newparam(:min_links) do
@@ -148,7 +120,10 @@ Puppet::Type.newtype(:cumulus_bond) do
 
   newparam(:miimon) do
     desc 'mii link monitoring interval'
-    defaultto '100'
+    defaultto 100
+    munge do |value|
+      @resource.munge_integer(value)
+    end
   end
 
   newparam(:xmit_hash_policy) do
@@ -168,17 +143,6 @@ Puppet::Type.newtype(:cumulus_bond) do
       raise Puppet::Error, 'bond members/slaves must be configured'
     end
 
-    if self[:clagd_enable].nil? ^ self[:clagd_priority].nil? ^
-      self[:clagd_peer_ip].nil? ^ self[:clagd_sys_mac].nil?
-      raise Puppet::Error, 'Clagd parameters clagd_enable, clagd_priority,
-      clagd_peer_ip and clagd_sys_mac must be configured together'
-    end
-
-    unless self[:clagd_args].nil?
-      if self[:clagd_enable].nil?
-        raise Puppet::Error, 'Clagd must be enabled for clagd_args to be active'
-      end
-    end
     if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
       raise Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
       configured together'

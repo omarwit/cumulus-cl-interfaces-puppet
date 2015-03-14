@@ -11,7 +11,7 @@ describe provider_class do
     # this is not a valid entry to use in a real scenario..
     # only designed for testing
     @resource = provider_resource.new(
-      name: 'swp1',
+      name: 'bond0',
       vids: ['1-10', '20'],
       ipv4: ['10.1.1.1/24'],
       ipv6: ['10:1:1::1/127'],
@@ -21,7 +21,7 @@ describe provider_class do
       mstpctl_bpduguard: true,
       mstpctl_portnetwork: false,
       mtu: 9000,
-      slaves: ['swp1-3']
+      slaves: ['bond0-3']
     )
     @provider = provider_class.new(@resource)
   end
@@ -37,12 +37,13 @@ describe provider_class do
   context 'config changed' do
     before do
       @loc_resource = provider_resource.new(
-        name: 'swp1',
+        name: 'bond0',
+        slaves: 'bond0-2',
         vids: ['1-10', '20'])
     end
     context 'config has changed' do
       before do
-        current_hash = "[{\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
+        current_hash = "[{\"addr_family\":null,\"name\":\"bond0\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
         mock_ifquery = double()
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
@@ -54,7 +55,10 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
-        current_hash = "[{\"auto\":true, \"addr_method\":null,\"addr_family\":null,\"name\":\"swp1\",\"config\":{\"bridge-vids\":\"1-10 20\"}}]"
+        current_hash = "[{\"addr_family\":null,\"addr_method\":null,\"auto\":true,\"name\":\"bond0\",
+        \"config\":{\"bond-slaves\":\"glob bond0-2\",\"bridge-vids\":\"1-10 20\",
+        \"bond-mode\":\"802.3ad\",\"bond-min-links\":\"1\",\"bond-miimon\":\"100\",
+        \"bond-lacp-rate\":\"1\",\"bond-xmit-hash_policy\":\"layer3+4\"}}]"
         mock_ifquery = double()
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
