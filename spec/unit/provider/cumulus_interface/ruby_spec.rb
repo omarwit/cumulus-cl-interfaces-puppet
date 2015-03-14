@@ -22,6 +22,7 @@ describe provider_class do
       virtual_mac: '00:00:5e:00:00:01',
       mstpctl_bpduguard: true,
       mstpctl_portnetwork: false,
+      mtu: 9000
     )
     @provider = provider_class.new(@resource)
   end
@@ -109,6 +110,10 @@ describe provider_class do
     context 'generic attr is a false bool' do
       subject { confighash['config']['mstpctl-portnetwork'] }
       it { is_expected.to eq 'no' }
+    end
+    context 'mtu' do
+      subject {confighash['config']['mtu'] }
+      it { is_expected.to eq '9000' }
     end
   end
 end
