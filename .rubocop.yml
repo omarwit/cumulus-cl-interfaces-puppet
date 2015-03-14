@@ -1,0 +1,3 @@
+MethodLength:
+  CountComments: false
+  Max: 20
