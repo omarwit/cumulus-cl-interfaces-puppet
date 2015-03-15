@@ -31,13 +31,20 @@ Puppet::Type.newtype(:cumulus_interface) do
   newparam(:ipv4) do
     desc 'list of ipv4 addresses
     ip address must be in CIDR format and subnet mask included
-    Example: 10.1.1.1/30'
+    Example: ["10.1.1.1/30"]'
+    munge do |value|
+      @resource.munge_array(value)
+    end
+
   end
 
   newparam(:ipv6) do
     desc 'list of ipv6 addresses
     ip address must be in CIDR format and subnet mask included
-    Example: 10:1:1::1/127'
+    Example: ["10:1:1::1/127"]'
+    munge do |value|
+      @resource.munge_array(value)
+    end
   end
 
   newparam(:alias_name) do

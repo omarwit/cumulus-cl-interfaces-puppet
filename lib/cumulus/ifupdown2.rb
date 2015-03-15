@@ -70,7 +70,8 @@ class Ifupdown2Config
   def update_address
     addresslist = build_address('ipv4')
     addresslist += ' ' + build_address('ipv6')
-    return if addresslist.strip.empty?
+    addresslist.strip!
+    return if addresslist.empty?
     @confighash['config']['address'] = addresslist
   end
 

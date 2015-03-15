@@ -44,6 +44,15 @@ describe cl_iface do
   end
 
   context 'validation' do
+    context 'ip address' do
+      before do
+        @resource1 = cl_iface.new(name: 'swp1',
+                                  ipv4: '10.1.1.1/24')
+      end
+      subject { @resource1.value(:ipv4) }
+      it { is_expected.to eq ['10.1.1.1/24'] }
+    end
+
     context 'vrr parameters' do
       context 'if not all vrr parameters are set' do
         it do

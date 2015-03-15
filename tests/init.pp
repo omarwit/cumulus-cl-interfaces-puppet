@@ -30,9 +30,9 @@ cumulus_interface { "swp33":
    vids => ["1-10", '12'],
    pvid => 1
 }
-cumulus_interface{ 'lo':
+cumulus_interface{ 'loop0':
    addr_method => 'loopback'
 }
-cumulus_interface{ 'eth0':
+cumulus_interface{ 'swp22':
    addr_method => 'dhcp'
 }

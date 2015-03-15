@@ -64,7 +64,7 @@ describe provider_class do
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
         @loc_provider = provider_class.new(@loc_resource)
       end
-      subject { binding.pry ; @loc_provider.config_changed? }
+      subject { @loc_provider.config_changed? }
       it { is_expected.to be false }
     end
   end
