@@ -1,6 +1,6 @@
 require 'cumulus/ifupdown2'
 Puppet::Type.type(:cumulus_bond).provide :ruby do
-#  confine operatingsystem: [:cumulus_linux]
+  confine operatingsystem: [:cumulus_linux]
 
   def build_desired_config
     config = Ifupdown2Config.new(resource)

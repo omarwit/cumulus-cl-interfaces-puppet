@@ -31,7 +31,6 @@ Puppet::Type.newtype(:cumulus_bond) do
     munge do |value|
       @resource.munge_array(value)
     end
-
   end
 
   newparam(:ipv6) do
