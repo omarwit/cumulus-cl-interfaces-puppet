@@ -9,25 +9,26 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-cumulus_bridge { 'br0':
-    ports => ['swp11-12, 'swp32-33, ‘bond0’],
-    alias_name => 'vlan aware bridge',
-    mtu => '9000',
-    vids => [‘1-300’],
-    vlan_aware => true,
-    mstpctl_treeprio => '4096'
-}
+#cumulus_bridge { 'br0':
+#    ports => ['swp11-12, 'swp32-33, ‘bond0’],
+#    alias_name => 'vlan aware bridge',
+#    mtu => '9000',
+#    vids => [‘1-300’],
+#    vlan_aware => true,
+#    mstpctl_treeprio => '4096'
+#}
 cumulus_bond { 'bond0':
     slaves => ['swp3-4'],
     clag_id => 1
 }
-cumulus_interface { ‘br0.1:
-   ipv4 => ‘10.1.1.1/24’
+cumulus_interface { 'br0.1':
+   ipv4 => '10.1.1.1/24'
 }
-cumulus_interface { 'swp33':
-   speed => '1000'
-   alias_name => ‘only has vlans 1-10’
-   vids => [‘1-10’]
+cumulus_interface { "swp33":
+   speed => 1000,
+   alias_name => "trunk port",
+   vids => ["1-10", '12'],
+   pvid => 1
 }
 cumulus_interface{ 'lo':
    addr_method => 'loopback'

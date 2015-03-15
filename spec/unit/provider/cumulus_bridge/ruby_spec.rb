@@ -34,7 +34,6 @@ describe provider_class do
     it { is_expected.to eq ['cumulus_linux'] }
   end
 
-
   context 'config changed' do
     before do
       @loc_resource = provider_resource.new(
@@ -43,8 +42,9 @@ describe provider_class do
     end
     context 'config has changed' do
       before do
-        current_hash = "[{\"addr_family\":null,\"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-4\"}}]"
-        mock_ifquery = double()
+        current_hash = "[{\"addr_family\":null,\"name\":\"br0\",
+        \"config\":{\"bridge-ports\":\"glob swp1-4\"}}]"
+        mock_ifquery = double
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
         @loc_provider = provider_class.new(@loc_resource)
@@ -55,9 +55,11 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
-        current_hash = "[{\"auto\":true, \"addr_method\":null,\"addr_family\":null," +
-        "\"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-3\",\"bridge-stp\":\"yes\"}}]"
-        mock_ifquery = double()
+        current_hash = "[{\"auto\":true, \"addr_method\":null,
+        \"addr_family\":null,
+        \"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-3\",
+        \"bridge-stp\":\"yes\"}}]"
+        mock_ifquery = double
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
         @loc_provider = provider_class.new(@loc_resource)
@@ -68,21 +70,21 @@ describe provider_class do
   end
 
   context 'desired config hash' do
-    let(:confighash) { @provider.instance_variable_get("@config").confighash }
+    let(:confighash) { @provider.instance_variable_get('@config').confighash }
     before  do
       @provider.build_desired_config
     end
     context 'bridge members' do
       subject { confighash['config']['bridge-ports'] }
-      it { is_expected.to eq "glob swp1-3 bond0" }
+      it { is_expected.to eq 'glob swp1-3 bond0' }
     end
     context 'bridge options' do
       subject { confighash['config']['bridge-vids'] }
-      it { is_expected.to eq "1-10 20" }
+      it { is_expected.to eq '1-10 20' }
     end
     context 'link speed options' do
       subject { confighash['config']['link-speed'] }
-      it { is_expected.to eq "1000" }
+      it { is_expected.to eq '1000' }
     end
     context 'link duplex options' do
       subject { confighash['config']['link-duplex'] }
@@ -109,7 +111,7 @@ describe provider_class do
       it { is_expected.to eq '00:00:5e:00:00:01 10.1.1.1/24' }
     end
     context 'mtu config' do
-      subject { confighash['config']['mtu']}
+      subject { confighash['config']['mtu'] }
       it { is_expected.to eq '9000' }
     end
   end

@@ -19,7 +19,7 @@ describe cl_iface do
       :location,
       :mstpctl_treeprio,
       :vlan_aware,
-      :ports,
+      :ports
     ]
   end
 
@@ -41,28 +41,35 @@ describe cl_iface do
 
   context 'defaults for' do
     before do
-      @bondtype = cl_iface.new(:name => 'br0',
-                               :ports => ['bond0-2'])
+      @bondtype = cl_iface.new(name: 'br0',
+                               ports: ['bond0-2'])
     end
-    {'stp' => true}.each do |k, v |
-       context k do
-       it { expect(@bondtype.value(k.to_sym)).to eq v }
-     end
-     end
+    { stp: true }.each do |k, v|
+      context k do
+        it { expect(@bondtype.value(k)).to eq v }
+      end
+    end
   end
-
 
   context 'validation' do
     context 'ports parameter' do
       context 'if not set' do
-        it { expect { cl_iface.new(:name => 'br0') }.to raise_error }
+        it do
+          expect { cl_iface.new(name: 'br0') }.to raise_error
+        end
       end
       context 'if set' do
-        it { expect { cl_iface.new(:name => 'br0',
-                                   :ports => ['swp1-12']) }.to_not raise_error }
+        it do
+          expect do
+            cl_iface.new(name: 'br0',
+                         ports: ['swp1-12'])
+          end.to_not raise_error
+        end
         it 'should be an array' do
-          expect { cl_iface.new(:name => 'br0',
-                                :ports => "swp1-12, swp13") }.to raise_error
+          expect do
+            cl_iface.new(name: 'br0',
+                         ports: 'swp1-12, swp13')
+          end.to raise_error
         end
       end
     end
@@ -70,15 +77,20 @@ describe cl_iface do
     context 'vrr parameters' do
       context 'if not all vrr parameters are set' do
         it do
-          expect { cl_iface.new(:name => 'swp1', :ports => ['swp1-2'],
-                                 'virtual_ip' => '10.1.1.1/24') }.to raise_error
+          expect do
+            cl_iface.new(name: 'swp1',
+                         ports: ['swp1-2'],
+                         virtual_ip: '10.1.1.1/24')
+          end.to raise_error
         end
         context 'if all vrr parameters are set' do
           it do
-            expect { cl_iface.new(:name => 'swp1',
-                                  :virtual_ip => '10.1.1.1/24',
-                                  :ports => ['swp1-2'],
-                                  :virtual_mac => '00:00:5e:00:00:01') }.to_not raise_error
+            expect do
+              cl_iface.new(name: 'swp1',
+                           virtual_ip: '10.1.1.1/24',
+                           ports: ['swp1-2'],
+                           virtual_mac: '00:00:5e:00:00:01')
+            end.to_not raise_error
           end
         end
       end

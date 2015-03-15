@@ -93,7 +93,7 @@ Puppet::Type.newtype(:cumulus_bond) do
     aware mode'
   end
 
-  newparam(:clagd_id) do
+  newparam(:clag_id) do
     desc 'Define which bond is in clag. the ID must the
     same for the corresponding bond on the adjacent switch'
   end
