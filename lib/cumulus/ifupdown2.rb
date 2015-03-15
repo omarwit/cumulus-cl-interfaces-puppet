@@ -19,6 +19,8 @@ class Ifupdown2Config
   # return the hash.
   #
   def if_to_hash
+    filepath = @resource[:location] + '/' + @resource[:name]
+    return {} unless File.exist?(filepath)
     json = ''
     IO.popen("/sbin/ifquery #{@resource[:name]} -o json") do |ifquery|
       json = ifquery.read
@@ -86,7 +88,7 @@ class Ifupdown2Config
       ifupdown_value = resource_value.to_s
     end
     # ifquery uses dash not underscore to define attributes
-    attr.sub! '_', '-'
+    attr.gsub! '_', '-'
     configattr = (suffix.nil?) ? attr : "#{suffix}-#{attr}"
     @confighash['config'][configattr] = ifupdown_value
   end
