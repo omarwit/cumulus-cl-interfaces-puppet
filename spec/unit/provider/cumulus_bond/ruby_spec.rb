@@ -42,6 +42,7 @@ describe provider_class do
     end
     context 'config has changed' do
       before do
+        allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"addr_family\":null,\"name\":
         \"bond0\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
         mock_ifquery = double
@@ -55,13 +56,14 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
+        allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"addr_family\":null,\"addr_method\":null,
         \"auto\":true,\"name\":\"bond0\",
         \"config\":{\"bond-slaves\":\"glob bond0-2\",
         \"bridge-vids\":\"1-10 20\",
         \"bond-mode\":\"802.3ad\",\"bond-min-links\":\"1\",
         \"bond-miimon\":\"100\",
-        \"bond-lacp-rate\":\"1\",\"bond-xmit-hash_policy\":\"layer3+4\"}}]"
+        \"bond-lacp-rate\":\"1\",\"bond-xmit-hash-policy\":\"layer3+4\"}}]"
         mock_ifquery = double
         allow(mock_ifquery).to receive(:read).and_return(current_hash)
         allow(IO).to receive(:popen).and_yield(mock_ifquery)

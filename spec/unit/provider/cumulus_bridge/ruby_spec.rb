@@ -42,6 +42,7 @@ describe provider_class do
     end
     context 'config has changed' do
       before do
+        allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"addr_family\":null,\"name\":\"br0\",
         \"config\":{\"bridge-ports\":\"glob swp1-4\"}}]"
         mock_ifquery = double
@@ -55,6 +56,7 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
+        allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"auto\":true, \"addr_method\":null,
         \"addr_family\":null,
         \"name\":\"br0\",\"config\":{\"bridge-ports\":\"glob swp1-3\",

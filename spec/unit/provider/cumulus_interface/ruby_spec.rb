@@ -55,6 +55,7 @@ describe provider_class do
 
     context 'config has not changed' do
       before do
+        allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"auto\":true, \"addr_method\":null,
         \"addr_family\":null,\"name\":\"swp1\",\"config\":{
         \"bridge-vids\":\"1-10 20\"}}]"
@@ -63,7 +64,7 @@ describe provider_class do
         allow(IO).to receive(:popen).and_yield(mock_ifquery)
         @loc_provider = provider_class.new(@loc_resource)
       end
-      subject { @loc_provider.config_changed? }
+      subject { binding.pry ; @loc_provider.config_changed? }
       it { is_expected.to be false }
     end
   end
