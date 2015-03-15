@@ -86,17 +86,19 @@ Puppet::Type.newtype(:cumulus_bridge) do
     defaultto '/etc/network/interfaces.d'
   end
 
-  newparam(:stp, :boolean => true,
-          :parent => Puppet::Parameter::Boolean) do
+  newparam(:stp,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'enables spanning tree. default is "on" '
     defaultto true
   end
 
-  newparam(:vlan_aware, :boolean => true,
-          :parent => Puppet::Parameter::Boolean) do
-    desc 'enables vlan aware mode. Selects between the classic bridge driver
-    and vlan aware bridge driver. Only one bridge should be covered in vlan
-    aware mode'
+  newparam(:vlan_aware,
+           boolean: true,
+           parent:  Puppet::Parameter::Boolean) do
+    desc 'enables vlan aware mode. Selects between the
+    classic bridge driver and vlan aware bridge driver.
+    Only one bridge should be covered in vlan aware mode'
   end
 
   newparam(:ports) do
@@ -114,12 +116,10 @@ Puppet::Type.newtype(:cumulus_bridge) do
   end
 
   validate do
-    if self[:ports].nil?
-      raise Puppet::Error, 'ports list required'
-    end
+    fail Puppet::Error, 'ports list required' if self[:ports].nil?
 
     if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
-      raise Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
+      fail Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
       configured together'
     end
   end

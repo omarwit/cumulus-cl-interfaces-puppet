@@ -1,14 +1,15 @@
 require 'json'
+# defines functions that read and write ifquery output
 class Ifupdown2Config
   attr_accessor :confighash, :currenthash
   def initialize(resource)
     @resource = resource
     @confighash = {
-      "addr_family" => nil,
-      "addr_method" => nil,
-      "auto" => true,
-      "name" => resource[:name],
-      "config" => {}
+      'addr_family' => nil,
+      'addr_method' => nil,
+      'auto' => true,
+      'name' => resource[:name],
+      'config' => {}
     }
     @currenthash = if_to_hash
   end
@@ -23,7 +24,7 @@ class Ifupdown2Config
       json = ifquery.read
     end
     JSON.parse(json)[0]
-  rescue Exception => ex
+  rescue StandardError => ex
     Puppet.warning("ifquery failed: #{ex}")
   end
 
@@ -38,7 +39,7 @@ class Ifupdown2Config
   def hash_to_if
     intf = ''
     cmd = "/sbin/ifquery -i - -t json #{@resource[:name]}"
-    IO.popen(cmd,mode = 'r+') do |ifquery|
+    IO.popen(cmd, mode: 'r+') do |ifquery|
       ifquery.write([@confighash].to_json)
       ifquery.close_write
       intf = ifquery.read
@@ -47,17 +48,15 @@ class Ifupdown2Config
     Puppet.debug("hash_to_if hash before text:\n#{@confighash}")
     Puppet.debug("hash_to_if ifupdown2 text:\n#{intf}")
     intf
-  rescue Exception => ex
+  rescue StandardError => ex
     Puppet.warning("ifquery failed: #{ex}")
   end
 
   def update_addr_method
-    unless @resource[:addr_method].nil?
-      Puppet.info "updating address method #{@resource[:name]}"
-      @confighash['addr_method'] = @resource[:addr_method].to_s
-      @confighash['addr_family'] = 'inet'
-    end
-
+    return if @resource[:addr_method].nil?
+    Puppet.info "updating address method #{@resource[:name]}"
+    @confighash['addr_method'] = @resource[:addr_method].to_s
+    @confighash['addr_family'] = 'inet'
   end
 
   def build_address(addr_type)

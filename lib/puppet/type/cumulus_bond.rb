@@ -79,14 +79,16 @@ Puppet::Type.newtype(:cumulus_bond) do
     defaultto '/etc/network/interfaces.d'
   end
 
-  newparam(:mstpctl_portnetwork, :boolean => true,
-           :parent => Puppet::Parameter::Boolean) do
+  newparam(:mstpctl_portnetwork,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'configures bridge assurance. Ensure that port is in vlan
     aware mode'
   end
 
-  newparam(:mstpctl_bpduguard, :boolean => true,
-           :parent => Puppet::Parameter::Boolean) do
+  newparam(:mstpctl_bpduguard,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'configures bpdu guard. Ensure that the port is in vlan
     aware mode'
   end
@@ -140,11 +142,11 @@ Puppet::Type.newtype(:cumulus_bond) do
 
   validate do
     if self[:slaves].nil?
-      raise Puppet::Error, 'bond members/slaves must be configured'
+      fail Puppet::Error, 'bond members/slaves must be configured'
     end
 
     if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
-      raise Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
+      fail Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
       configured together'
     end
   end

@@ -90,38 +90,41 @@ Puppet::Type.newtype(:cumulus_interface) do
     defaultto '/etc/network/interfaces.d'
   end
 
-  newparam(:mstpctl_portnetwork, :boolean => true,
-          :parent => Puppet::Parameter::Boolean) do
+  newparam(:mstpctl_portnetwork,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'configures bridge assurance. Ensure that port is in vlan
     aware mode'
   end
 
-  newparam(:mstpctl_bpduguard, :boolean => true,
-          :parent => Puppet::Parameter::Boolean) do
+  newparam(:mstpctl_bpduguard,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'configures bpdu guard. Ensure that the port is in vlan
     aware mode'
   end
 
-  newparam(:clagd_enable, :boolean => true,
-          :parent => Puppet::Parameter::Boolean) do
+  newparam(:clagd_enable,
+           boolean: true,
+           parent: Puppet::Parameter::Boolean) do
     desc 'enable CLAG on the interface. Interface must be in vlan \
-    aware mode. clagd_enable, clagd_priority, clagd_peer_ip, clagd_sys_mac must be
-    configured together'
+    aware mode. clagd_enable, clagd_priority, clagd_peer_ip,
+    clagd_sys_mac must be configured together'
   end
 
   newparam(:clagd_priority) do
     desc 'determines which switch is the primary role. The lower priority
     switch will assume the primary role. Range can be between 0-65535.
-    clagd_enable, clagd_priority, clagd_peer_ip and clagd_sys_mac must be configured
-    together'
+    clagd_enable, clagd_priority, clagd_peer_ip
+    and clagd_sys_mac must be configured together'
     munge do |value|
       @resource.munge_integer(value)
     end
   end
 
   newparam(:clagd_peer_ip) do
-    desc 'clagd peerlink adjacent port IP. clagd_enable, clagd_peer_ip, clagd_sys_mac
-    and clagd_sys_mac must be configured together'
+    desc 'clagd peerlink adjacent port IP. clagd_enable,
+    clagd_peer_ip, clagd_sys_mac and clagd_sys_mac must be configured together'
   end
 
   newparam(:clagd_sys_mac) do
@@ -131,24 +134,24 @@ Puppet::Type.newtype(:cumulus_interface) do
   end
 
   newparam(:clagd_args) do
-    desc 'additional Clag parameters. must be configured with other clagd parameters.
-    it is optional'
+    desc 'additional Clag parameters. must be configured with other
+    clagd parameters. It is optional'
   end
 
   validate do
     if self[:clagd_enable].nil? ^ self[:clagd_priority].nil? ^
-      self[:clagd_peer_ip].nil? ^ self[:clagd_sys_mac].nil?
-      raise Puppet::Error, 'Clagd parameters clagd_enable, clagd_priority,
+       self[:clagd_peer_ip].nil? ^ self[:clagd_sys_mac].nil?
+      fail Puppet::Error, 'Clagd parameters clagd_enable, clagd_priority,
       clagd_peer_ip and clagd_sys_mac must be configured together'
     end
 
     unless self[:clagd_args].nil?
       if self[:clagd_enable].nil?
-        raise Puppet::Error, 'Clagd must be enabled for clagd_args to be active'
+        fail Puppet::Error, 'Clagd must be enabled for clagd_args to be active'
       end
     end
     if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
-      raise Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
+      fail Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
       configured together'
     end
   end
