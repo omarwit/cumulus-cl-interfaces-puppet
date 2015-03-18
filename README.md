@@ -1,91 +1,141 @@
-# Cumulus Interface Module
-
-License: GPLv2
-
-## Work in Progress
+# cumulus_interface
 
 #### Table of Contents
 
-- [Cumulus Interface module](#cumulus-interface-module)
-  - [Overview](#overview)
-  - [Features](#features)
-  - [Requirements](#requirements)
-  - [Usage](#usage)
-  - [Reference](#reference)
-  - [Contributors](#contributors)
-  - [Development](#development)
-  - [Testing](#testing)
+1. [Overview](#overview)
+2. [Module Description](#module-description)
+3. [Setup - The basics of getting started with [cumulus_interface]](#setup)
+    * [What `cumulus_interface` affects](#what-cumulus_interface-affects)
+4. [Usage](#usage)
+5. [Reference](#reference)
+5. [Limitations - OS compatibility, etc.](#limitations)
+6. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-This module can configure a variety of interfaces on Cumulus Linux
+This module provides 3 resource types that can most types of interfaces available on Cumulus Linux.
 
-## Features
+## Module Description
 
-The module configures the following interface types
-* physical ports (swpX) or (swpXsY)
-* SVI interface. These are subinterfaces of bridge interfaces running in vlan
-  aware mode
-* Layer3 subinterfaces of physical ports or bonds.
-* Management Ports, e.g eth0
-* Loopback interface
+The module consists of 3 resources types
 
-To configure bonds or bridges, use the cumulus_bond or cumulus_bridge puppet
-modules.
+* **cumulus_interface**
+Manage a network interface using the ifupdown2 toolkit. The configuration for the interface will be written to a fragment under the interface configurations fragments directory. Does not configure vxlan, bond or bridge interfaces. For bridge configuration use the `cumulus_bridge` module. For bond configuration use the `cumulus_bond` module.
 
+* **cumulus_bond**
+Manage a network bond using the ifupdown2 toolkit. The configuration for the interface will be written to a fragment under the interface configurations fragments directory.
 
-Interface configuration is performed by ifupdown2 which has the ability to place
-each interface configuration in a separate file. This module assumes that the
-switch has a /etc/network/interfaces that looks like this
-```
-# Managed by Puppet
-source /etc/network/interfaces.d/*
-```
-Then interface configuration can be found in files located in
-`/etc/network/interfaces.d/`
-
-```
-cumulus# tree /etc/network/interfaces.d
-/etc/network/interfaces.d
-├── bond0
-├── eth0
-├── lo
-├── swp1
-└── swp2
-```
-
-This module can apply commonly used features the interface types described above
-such as ip address, mtu, and speed. For a full list of options see the `Usage`
-section.
-
-`service networking reload` will unconfigure any interface from the kernel that is
-not defined ifupdown2.
+* **cumulus_bridge**
+Manage a bridge using the ifupdown2 toolkit. The configuration for the interface will be written to a fragment under the interface configurations
+fragments directory.
 
 ## Setup
+
+### What cumulus_interface affects
+
+* This module affects the configuration files located in the interfaces folder defined by ifupdown2..
+By default this is `/etc/network/interfaces.d`.
+
+* To activate the changes run `service networking reload`.
+> **NOTE**: reloading interface config will not be disruptive if there is no
+> change in the configuration.
 
 
 ## Usage
 
+**cumulus_interface Examples:**
+
+Configure the loopback interface and the management interface `eth0` using DHCP:
+
+```ruby
+cumulus_interface { 'lo':
+  addr_method => 'loopback'
+}
+
+cumulus_interface { 'eth0':
+  addr_method  => 'dhcp'
+}
+```
+
+Configure `swp33` as a 1GbE port with a single IPv4 address:
+
+```ruby
+cumulus_interface { 'swp33':
+  ipv4 => ['10.30.1.1/24']
+  speed => 1000
+end
+```
+
+Configure the interface `peerlink.4094` as the CLAG peer interface:
+
+```ruby
+cumulus_interface { 'peerlink.4094':
+  ipv4 => ['10.100.1.0/31']
+  clagd_enable => true
+  clagd_peer_ip => '10.100.1.1/31'
+  clagd_sys_mac => '44:38:39:ff:20:94'
+}
+```
+
+**cumulus_bond Examples:**
+
+Create a bond called `peerlink` with the interfaces `swp1` and `swp2` as
+members:
+
+```ruby
+cumulus_bond { 'peerlink':
+  slaves => ['swp1-2']
+}
+```
+
+Create a bond called `bond0` with the interfaces `swp3` and `swp4` as members,
+using layer2+3 TX hashing and the CLAG ID set:
+
+```ruby
+cumulus_bond { 'bond0':
+  slaves => ['swp3-4']
+  xmit_hash_policy => 'layer2+3'
+  clag_id => 1
+}
+```
+
+**cumulus_bridge Examples:**
+
+"Classic" bridge driver:
+
+```ruby
+cumulus_bridge { 'br10':
+  ports      => ['swp11-12.1', 'swp32.1']
+  ipv4       => ['10.1.1.1/24', '10.20.1.1/24']
+  ipv6       => ['2001:db8:abcd::/48']
+  alias_name =>  'classic bridge'
+  mtu        => 9000
+  mstpctl_treeprio =>  4096
+}
+```
+
+VLAN aware bridge:
+
+```ruby
+cumulus_bridge { 'bridge':
+  vlan_aware => true
+  ports      => ['peerlink', 'downlink', 'swp10']
+  vids       => ['1-4094']
+  pvid       => 1
+  stp        => true
+  mstpctl_treeprio  => 4096
+}
+```
+
 ## Reference
 
-    ```
-
-  * `allowed` : Required option. This option must be an array. It lists all the interfaces that can be configured on the switch. Range of interface are allowed.
-    ```
-    allowed => ['lo', eth0', 'swp1-30', 'bond0-20']
-    ```
-
-
-  * `location`: where interface files are stored. By default this is /etc/network/interfaces.d.
-`/etc/network/interfaces` must be configured with the following 2 lines
-    ```
-    #Managed By Puppet
-    source /etc/network/interfaces.d/
-    ```
 
 ## Limitations
 
 This module only works on Cumulus Linux.
+
+The ``puppet resource`` command for `cumulus_interface`, `cumulus_bond` and
+`cumulus_bridge` is currently not supported. It may be added in a future release.
 
 ## Development
 
@@ -96,7 +146,7 @@ This module only works on Cumulus Linux.
 5. Create new Pull Request.
 
 
-![Cumulus icon](http://cumulusnetworks.com/static/cumulus/img/logo_2014.png)
+![Cumulus Networks Icon](http://cumulusnetworks.com/static/cumulus/img/logo_2014.png)
 
 ### Cumulus Linux
 
@@ -105,9 +155,8 @@ networking hardware. It enables the latest Linux applications and automation
 tools on networking gear while delivering new levels of innovation and
 ﬂexibility to the data center.
 
-For further details please see:
-[cumulusnetworks.com](http://www.cumulusnetworks.com)
+For further details please see: [http://cumulusnetworks.com](http://www.cumulusnetworks.com)
 
-## CONTRIBUTORS
+## Contributors
 
-- Stanley Karunditu (@skamithik)
+- Stanley Karunditu [@skamithi](https://github.com/skamithi)
