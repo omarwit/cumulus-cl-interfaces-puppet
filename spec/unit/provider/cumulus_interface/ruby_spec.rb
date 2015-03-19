@@ -22,7 +22,11 @@ describe provider_class do
       virtual_mac: '00:00:5e:00:00:01',
       mstpctl_bpduguard: true,
       mstpctl_portnetwork: false,
-      mtu: 9000
+      mtu: 9000,
+      clagd_enable: true,
+      clagd_sys_mac: '44:38:39:ff:20:94',
+      clagd_peer_ip: '10.1.1.1'
+
     )
     @provider = provider_class.new(@resource)
   end
@@ -117,6 +121,18 @@ describe provider_class do
     context 'mtu' do
       subject { confighash['config']['mtu'] }
       it { is_expected.to eq '9000' }
+    end
+    context 'clagd_enable' do
+      subject { confighash['config']['clagd-enable'] }
+      it { is_expected.to eq 'yes' }
+    end
+    context 'clagd_sys_mac' do
+      subject { confighash['config']['clagd-sys-mac'] }
+      it { is_expected.to eq '44:38:39:ff:20:94' }
+    end
+    context 'clagd_peer_ip' do
+      subject { confighash['config']['clagd-peer-ip'] }
+      it { is_expected.to eq '10.1.1.1' }
     end
   end
 end

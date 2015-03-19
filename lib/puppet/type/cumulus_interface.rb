@@ -135,7 +135,7 @@ Puppet::Type.newtype(:cumulus_interface) do
 
   newparam(:clagd_sys_mac) do
     desc 'clagd system mac. Must the same across both Clag switches.
-    range should start with 44:38:38:ff. clagd_enable, clagd_peer_ip,
+    range should start with 44:38:39:ff. clagd_enable, clagd_peer_ip,
     clagd_sys_mac, must be configured together'
   end
 
