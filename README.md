@@ -13,7 +13,8 @@
 
 ## Overview
 
-This module provides 3 resource types that can most types of interfaces available on Cumulus Linux.
+This module provides 3 resource types that can configure
+most types of interfaces available on Cumulus Linux.
 
 ## Module Description
 
