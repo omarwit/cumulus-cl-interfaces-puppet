@@ -1,5 +1,5 @@
 {
-  "name": "cumulus-cumulus_interfaces",
+  "name": "cumuluslinux-cumulus_interfaces",
   "version": "1.0.0",
   "author": "Cumulus Networks",
   "summary": "Configures Cumulus Linux interfaces",
@@ -12,8 +12,7 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "CumulusLinux",
-      "operatingsystemrelease": ["2.5.0", "2.5.1"]
+      "operatingsystem": "CumulusLinux"
     }
   ]
 }
