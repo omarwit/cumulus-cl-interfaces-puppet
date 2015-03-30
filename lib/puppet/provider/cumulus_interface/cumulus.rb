@@ -1,5 +1,5 @@
 require 'cumulus/ifupdown2'
-Puppet::Type.type(:cumulus_interface).provide :ruby do
+Puppet::Type.type(:cumulus_interface).provide :cumulus do
   confine operatingsystem: [:cumuluslinux]
 
   def build_desired_config
