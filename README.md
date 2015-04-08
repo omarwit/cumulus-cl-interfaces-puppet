@@ -22,7 +22,7 @@ The module consists of three resources types:
 
 ### cumulus_interface
 
-This resource type manages a network interface using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface is written to a file in the interface configuration files directory. This resource type does not configure vxlan, bond, or bridge interfaces. 
+This resource type configures a network interface using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface is written to a file in the interface configuration file directory. This resource type does not configure VXLAN, bond, or bridge interfaces. 
 
 For bridge configuration use the `cumulus_bridge` module. 
 
@@ -30,11 +30,11 @@ For bond configuration use the `cumulus_bond` module.
 
 ### cumulus_bond
 
-This resource type configures a network bond using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface is written to a file in the interface configuration files directory.
+This resource type configures a network bond using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface is written to a file in the interface configuration file directory.
 
 ### cumulus_bridge
 
-This resource type configures a bridge using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface will be written to a file in the interface configuration files' directory.
+This resource type configures a bridge using [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2). The configuration for the interface is written to a file in the interface configuration file directory.
 
 
 ## Setup
@@ -44,9 +44,9 @@ This resource type configures a bridge using [ifupdown2](http://docs.cumulusnetw
 * This module affects the configuration files located in the interfaces folder and managed by [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2).
 By default this is `/etc/network/interfaces.d`.
 
-* To activate the changes run `/sbin/ifreload -a`.
+* To activate the changes, run `/sbin/ifreload -a`.
 
-> **NOTE**: Reloading interface config will not be disruptive if there is no change in the configuration.
+> **NOTE**: Reloading the interface configuration is not disruptive if there is no change in the configuration.
 
 ## Usage
 
@@ -106,7 +106,7 @@ cumulus_bond { 'bond0':
 
 **cumulus_bridge Examples:**
 
-[Default ("Classic") bridge driver](http://docs.cumulusnetworks.com/display/CL25/Ethernet+Bridging+-+VLANs):
+[Default ("traditional") bridge driver](http://docs.cumulusnetworks.com/display/CL25/Ethernet+Bridging+-+VLANs):
 
 ```ruby
 cumulus_bridge { 'br10':
@@ -119,7 +119,7 @@ cumulus_bridge { 'br10':
 }
 ```
 
-[VLAN aware bridge](http://docs.cumulusnetworks.com/display/CL25/VLAN-aware+Bridge+Mode+for+Large-scale+Layer+2+Environments):
+[VLAN-aware bridge](http://docs.cumulusnetworks.com/display/CL25/VLAN-aware+Bridge+Mode+for+Large-scale+Layer+2+Environments):
 
 ```ruby
 cumulus_bridge { 'bridge':
@@ -144,24 +144,24 @@ cumulus_bridge { 'bridge':
 * `ipv4` - Array of IPv4 addresses to be applied to the interface.
 * `ipv6` - Array of IPv6 addresses to be applied to the interface.
 * `alias_name` - Interface alias.
-* `addr_method` - Address assignment method, dhcp or loopback. Default is empty, i.e. no address method is set.
+* `addr_method` - Address assignment method, `dhcp` or `loopback`. Default is empty (no address method is set).
 * `speed` - The interface link speed.
 * `mtu` - The interface Maximum Transmission Unit (MTU).
-* `virtual_ip` - VRR virtual IP.
-* `virtual_mac` - VRR virtual MAC.
-* `vids` - Array of VLANs to be configured for a VLAN aware trunk interface.
-* `pvid` - Native VLAN for a VLAN aware trunk interface.
-* `location` - Location of the configuration snippets directory. Default is '/etc/network/interfaces.d/'.
-* `mstpctl_portnetwork` - Enable bridge assurance on a VLAN aware trunk.
-* `mstpctl_bpduguard` - Enable BPDU guard on a VLAN aware trunk.
+* `virtual_ip` - VRR virtual IP address.
+* `virtual_mac` - VRR virtual MAC address.
+* `vids` - Array of VLANs to be configured for a VLAN-aware trunk interface.
+* `pvid` - Native VLAN for a VLAN-aware trunk interface.
+* `location` - Location of the configuration snippets directory. Default is `/etc/network/interfaces.d/`.
+* `mstpctl_portnetwork` - Enables bridge assurance on a VLAN-aware trunk.
+* `mstpctl_bpduguard` - Enables BPDU guard on a VLAN-aware trunk.
 
-The following CLAG-related attributes are also available. If CLAG is enabled, ``clagd_enable``,``clagd_priority``, ``clagd_peer_id`` and ``clagd_sys_mac`` should all be provided:
+The following CLAG-related attributes are also available. If CLAG is enabled, you must specify ``clagd_enable``,``clagd_priority``, ``clagd_peer_id`` and ``clagd_sys_mac``:
 
-* ``clagd_enable`` - Enable the clagd daemon.
+* ``clagd_enable`` - Enable the `clagd` daemon.
 * ``clagd_priority`` - Set the CLAG priority for this switch.
 * ``clagd_peer_id`` - Address of the CLAG peer switch.
-* ``clagd_sys_mac`` - CLAG system MAC. The MAC must be identical on both of the CLAG peers.
-* ``clagd_args`` - Any additional arguments to be passed to the clagd deamon.
+* ``clagd_sys_mac`` - CLAG system MAC address. The MAC address must be identical on both CLAG peers.
+* ``clagd_args`` - Any additional arguments to be passed to the `clagd` deamon.
 
 #### `cumulus_bond`
 
@@ -173,19 +173,19 @@ The following CLAG-related attributes are also available. If CLAG is enabled, ``
 * ``mode`` - Bond mode. Default is 802.3ad.
 * ``miimon`` - MII link monitoring interval. Default is 100.
 * ``xmit_hash_policy`` - TX hashing policy. Default is layer3+4.
-* ``lacp_rate`` - LACP bond rate. Default is 1, i.e. fast LACP timeout.
+* ``lacp_rate`` - LACP bond rate. Default is 1 (fast LACP timeout).
 * ``ipv4`` - Array of IPv4 addresses to be applied to the interface.
 * ``ipv6`` - Array of IPv6 addresses to be applied to the interface.
 * ``alias_name`` - Interface alias.
-* ``addr_method`` - Address assignment method. May be dhcp or empty. Default is empty, i.e. no address method is set.
+* ``addr_method`` - Address assignment method. May be `dhcp` or empty. Default is empty (no address method is set).
 * ``mtu`` - The interface Maximum Transmission Unit (MTU).
-* ``virtual_ip`` - VRR virtual IP.
-* ``virtual_mac`` - VRR virtual MAC.
-* ``vids`` - Array of VLANs to be configured for a VLAN aware trunk interface.
-* ``pvid`` - Native VLAN for a VLAN aware trunk interface.
-* ``location`` - Location of the configuration snippets directory. Default is '/etc/network/interfaces.d/'.
-* ``mstpctl_portnetwork`` - Enable bridge assurance on a VLAN aware trunk.
-* ``mstpctl_bpduguard`` - Enable BPDU guard on a VLAN aware trunk.
+* ``virtual_ip`` - VRR virtual IP address.
+* ``virtual_mac`` - VRR virtual MAC address.
+* ``vids`` - Array of VLANs to be configured for a VLAN-aware trunk interface.
+* ``pvid`` - Native VLAN for a VLAN-aware trunk interface.
+* ``location`` - Location of the configuration snippets directory. Default is `/etc/network/interfaces.d/`.
+* ``mstpctl_portnetwork`` - Enable bridge assurance on a VLAN-aware trunk.
+* ``mstpctl_bpduguard`` - Enable BPDU guard on a VLAN-aware trunk.
 * ``clag_id`` - Define which bond is in the CLAG. The ID must be the same on both CLAG peers.
 
 #### `cumulus_bridge`
@@ -196,16 +196,16 @@ The following CLAG-related attributes are also available. If CLAG is enabled, ``
 * `ipv4` - Array of IPv4 addresses to be applied to the interface.
 * `ipv6` - Array of IPv6 addresses to be applied to the interface.
 * `alias_name` - Interface alias.
-* `addr_method` - Address assignment method. May be dhcp or empty. Default is empty, i.e. no address method is set.
-* `mtu` - The interface Maximum Transmission Unit (MTU)
+* `addr_method` - Address assignment method. May be `dhcp` or empty. Default is empty (no address method is set).
+* `mtu` - The interface Maximum Transmission Unit (MTU).
 * `stp` - Enable spanning tree. Default is true.
 * `mstpctl_treeprio` - Bridge tree root priority. Must be a multiple of 4096.
-* `vlan_aware` - Use the VLAN aware bridge driver. Default is false.
-* `virtual_ip` - VRR virtual IP.
-* `virtual_mac` - VRR virtual MAC.
-* `vids` - Array of VLANs to be configured for a VLAN aware trunk interface.
-* `pvid` - Native VLAN for a VLAN aware trunk interface.
-* `location` - Location of the configuration snippets directory. Default is '/etc/network/interfaces.d/'.
+* `vlan_aware` - Use the VLAN-aware bridge driver. Default is false.
+* `virtual_ip` - VRR virtual IP address.
+* `virtual_mac` - VRR virtual MAC address.
+* `vids` - Array of VLANs to be configured for a VLAN-aware trunk interface.
+* `pvid` - Native VLAN for a VLAN-aware trunk interface.
+* `location` - Location of the configuration snippets directory. Default is `/etc/network/interfaces.d/`.
 
 ## Limitations
 
@@ -226,9 +226,9 @@ The ``puppet resource`` command for `cumulus_interface`, `cumulus_bond` and
 
 ![Cumulus Networks Icon](http://cumulusnetworks.com/static/cumulus/img/logo_2014.png)
 
-Cumulus Linux is a software distribution that runs on top of industry standard
+Cumulus Linux is a software distribution that runs on top of industry-standard
 networking hardware. It enables the latest Linux applications and automation
 tools on networking gear while delivering new levels of innovation and
 ﬂexibility to the data center.
 
-For further details please see: [http://cumulusnetworks.com](http://www.cumulusnetworks.com)
+For further details, please see [http://cumulusnetworks.com](http://www.cumulusnetworks.com).
