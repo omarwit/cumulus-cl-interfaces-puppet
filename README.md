@@ -70,7 +70,7 @@ cumulus_interface { 'eth0':
 cumulus_interface { 'swp33':
   ipv4 => ['10.30.1.1/24']
   speed => 1000
-end
+}
 ```
 
 *peerlink.4094*, a bond sub-interface, as the CLAG peer interface:
