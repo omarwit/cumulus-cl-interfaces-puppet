@@ -44,6 +44,8 @@ This resource type configures a bridge using [ifupdown2](http://docs.cumulusnetw
 * This module affects the configuration files located in the interfaces folder and managed by [ifupdown2](http://docs.cumulusnetworks.com/display/CL25/Network+Interface+Management+Using+ifupdown2).
 By default this is `/etc/network/interfaces.d`.
 
+* You need to add `source /etc/network/interfaces.d/*` to `/etc/network/interfaces` to make use of the new files.
+
 * To activate the changes, run `/sbin/ifreload -a`.
 
 > **NOTE**: Reloading the interface configuration is not disruptive if there is no change in the configuration.
