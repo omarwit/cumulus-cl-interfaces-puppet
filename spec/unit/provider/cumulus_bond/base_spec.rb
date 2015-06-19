@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pry-debugger'
 
 provider_resource = Puppet::Type.type(:cumulus_bond)
 provider_class = provider_resource.provider(:cumulus)
@@ -13,7 +12,7 @@ describe provider_class do
     @resource = provider_resource.new(
       name: 'bond0',
       vids: ['1-10', '20'],
-      ipv4: ['10.1.1.1/24'],
+      ipv4: '10.1.1.1/24',
       ipv6: ['10:1:1::1/127'],
       alias_name: 'my int description',
       virtual_ip: '10.1.1.1/24',

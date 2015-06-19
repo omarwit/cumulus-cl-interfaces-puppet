@@ -14,7 +14,7 @@ describe provider_class do
       name: 'swp1',
       vids: ['1-10', '20'],
       speed: 1000,
-      ipv4: ['10.1.1.1/24'],
+      ipv4: '10.1.1.1/24',
       ipv6: ['10:1:1::1/127'],
       addr_method: 'dhcp',
       alias_name: 'my int description',
