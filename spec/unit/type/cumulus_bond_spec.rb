@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'pry-debugger'
 cl_iface = Puppet::Type.type(:cumulus_bond)
 
 describe cl_iface do

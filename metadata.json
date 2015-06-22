@@ -1,6 +1,6 @@
 {
   "name": "cumuluslinux-cumulus_interfaces",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Cumulus Networks",
   "summary": "Configures Cumulus Linux interfaces",
   "license": "GPLv2",
