@@ -34,7 +34,6 @@ describe 'interfaces' do
       EOS
 
       apply_manifest(pp, :catch_failures => true)
-      #expect(apply_manifest(pp, :catch_failures => true).exit_code).to be_zero
     end
 
     describe interface('swp2') do
