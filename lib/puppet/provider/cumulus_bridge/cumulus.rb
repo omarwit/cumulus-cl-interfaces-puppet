@@ -14,7 +14,7 @@ Puppet::Type.type(:cumulus_bridge).provide :cumulus do
     config.update_alias_name
     config.update_vrr
     # attributes with no suffix like bond-, or bridge-
-    %w(mstpctl_treeprio mtu).each do |attr|
+    %w(mstpctl_treeprio mstpctl_portadminedge mtu).each do |attr|
       config.update_attr(attr)
     end
     # copy to instance variable

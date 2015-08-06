@@ -121,6 +121,10 @@ Puppet::Type.newtype(:cumulus_bridge) do
     end
   end
 
+  newparam(:mstpctl_portadminedge) do
+    desc 'configures port adminedge.'
+  end
+
   validate do
     fail Puppet::Error, 'ports list required' if self[:ports].nil?
 

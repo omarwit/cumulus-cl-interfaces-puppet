@@ -99,6 +99,12 @@ Puppet::Type.newtype(:cumulus_bond) do
     aware mode'
   end
 
+  newparam(:mstpctl_portadminedge,
+           boolean: false,
+           parent: Puppet::Parameter::Boolean)     do
+    desc 'configures port adminedge.'
+  end
+
   newparam(:clag_id) do
     desc 'Define which bond is in clag. the ID must the
     same for the corresponding bond on the adjacent switch'
