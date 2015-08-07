@@ -1,9 +1,7 @@
 require 'spec_helper_acceptance'
 
 describe 'interfaces' do
-
   context 'valid simple bond' do
-
     it 'should work with no errors' do
       pp = <<-EOS
         # Bond with defaults
@@ -14,26 +12,26 @@ describe 'interfaces' do
 
         # Bond, over-ride all defaults
         cumulus_bond { 'bond1':
-          slaves => ['swp5-6'],
-          ipv4 => ['10.0.0.1/24', '192.168.1.0/16'],
-          ipv6 => ['2001:db8:abcd::/48'],
-          alias_name => 'bond number 1',
-          #addr_method => 'static',
-          min_links => 2,
-          mode => 'balance-alb',
-          miimon => 99,
-          xmit_hash_policy => 'layer2',
-          lacp_rate => 1,
-          mtu => 9000,
+          slaves              => ['swp5-6'],
+          ipv4                => ['10.0.0.1/24', '192.168.1.0/16'],
+          ipv6                => ['2001:db8:abcd::/48'],
+          alias_name          => 'bond number 1',
+          #addr_method        => 'static',
+          min_links           => 2,
+          mode                => 'balance-alb',
+          miimon              => 99,
+          xmit_hash_policy    => 'layer2',
+          lacp_rate           => 1,
+          mtu                 => 9000,
           # ifquery doesn't seem to like clagd related parameters on an interface?
-          # clag_id => 1,
-          vids => ['1-4094'],
-          pvid => 1,
-          virtual_mac => '11:22:33:44:55:FF',
-          virtual_ip => '192.168.20.1',
+          # clag_id           => 1,
+          vids                => ['1-4094'],
+          pvid                => 1,
+          virtual_mac         => '11:22:33:44:55:FF',
+          virtual_ip          => '192.168.20.1',
           mstpctl_portnetwork => true,
-          mstpctl_bpduguard => true,
-          notify => Service['networking'],
+          mstpctl_bpduguard   => true,
+          notify              => Service['networking'],
         }
 
         file { '/etc/network/interfaces':
@@ -50,7 +48,7 @@ describe 'interfaces' do
         }
       EOS
 
-      apply_manifest(pp, :catch_failures => true)
+      apply_manifest(pp, catch_failures: true)
     end
 
     intf_dir = File.join('', 'etc', 'network', 'interfaces.d')
@@ -69,7 +67,7 @@ describe 'interfaces' do
 
     describe file("#{intf_dir}/bond1") do
       it { should be_file }
-      #its(:content) { should match(/iface bond1 inet static/) }
+      # its(:content) { should match(/iface bond1 inet static/) }
       its(:content) { should match(/iface bond1/) }
       its(:content) { should match(/bond-slaves glob swp5-6/) }
       its(:content) { should match(/mtu 9000/) }
@@ -81,12 +79,10 @@ describe 'interfaces' do
       its(:content) { should match(/alias bond number 1/) }
       its(:content) { should match(/bond-mode balance-alb/) }
       its(:content) { should match(/bond-xmit-hash-policy layer2/) }
-      its(:content) { should match(/address 10.0.0.1\/24 192.168.1.0\/16 2001:db8:abcd::\/48/) }
+      its(:content) { should match(%r{address 10.0.0.1/24 192.168.1.0/16 2001:db8:abcd::/48}) }
       its(:content) { should match(/address-virtual 11:22:33:44:55:FF 192.168.20.1/) }
       its(:content) { should match(/mstpctl-portnetwork yes/) }
       its(:content) { should match(/mstpctl-bpduguard yes/) }
     end
-
   end
-
 end

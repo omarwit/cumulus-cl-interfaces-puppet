@@ -3,3 +3,5 @@ MethodLength:
   Max: 20
 ClassLength:
   Max: 120
+Metrics/LineLength:
+  Enabled: false
