@@ -81,7 +81,7 @@ class Ifupdown2Config
     return if resource_value.nil?
     if resource_value == true
       ifupdown_value = 'yes'
-    elsif resource_value ==  false
+    elsif resource_value == false
       ifupdown_value = 'no'
     elsif resource_value.is_a?(Array)
       ifupdown_value = resource_value.join(' ')
@@ -139,7 +139,7 @@ class Ifupdown2Config
   def write_config
     Puppet.info "write config for #{@resource[:name]}"
     intf = hash_to_if
-    filepath = @resource[:location] + '/' +  @resource[:name]
+    filepath = @resource[:location] + '/' + @resource[:name]
     Puppet.debug "file location: #{filepath}"
     begin
       ifacefile = File.open(filepath, 'w')
