@@ -6,6 +6,7 @@ group :test do
   gem 'puppet', '~> 3.7.0'
   gem 'puppetlabs_spec_helper'
   gem 'rubocop'
+  gem 'beaker-rspec'
 end
 
 group :development do

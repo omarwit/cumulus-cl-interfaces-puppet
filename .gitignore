@@ -1,2 +1,6 @@
 *.swp
 *.vim
+log/
+.bundle/
+vendor/
+.vagrant/
