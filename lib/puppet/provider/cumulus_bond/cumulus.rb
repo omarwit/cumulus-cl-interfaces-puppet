@@ -10,7 +10,7 @@ Puppet::Type.type(:cumulus_bond).provide :cumulus do
     %w(vids pvid).each do |attr|
       config.update_attr(attr, 'bridge')
     end
-    %w(mode min_links miimon lacp_rate xmit_hash_policy).each do |attr|
+    %w(mode min_links miimon lacp_rate xmit_hash_policy lacp_bypass_allow lacp_bypass_period lacp_bypass_all_active lacp_bypass_priority).each do |attr|
       config.update_attr(attr, 'bond')
     end
     config.update_alias_name
