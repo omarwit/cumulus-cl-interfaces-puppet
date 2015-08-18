@@ -189,6 +189,11 @@ The following CLAG-related attributes are also available. If CLAG is enabled, yo
 * ``mstpctl_portnetwork`` - Enable bridge assurance on a VLAN-aware trunk.
 * ``mstpctl_bpduguard`` - Enable BPDU guard on a VLAN-aware trunk.
 * ``clag_id`` - Define which bond is in the CLAG. The ID must be the same on both CLAG peers.
+* ``lacp_bypass_allow`` - Enable LACP bypass, valid options are 0 or 1.
+* ``lacp_bypass_period`` - Period for enable lacp_bypass.
+* ``lacp_bypass_priority`` - Array of ports and priority
+* ``lacp_bypass_all_active`` - Activate all interfaces for bypass: 0 or 1.
+
 
 #### `cumulus_bridge`
 
