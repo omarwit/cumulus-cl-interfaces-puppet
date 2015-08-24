@@ -1,5 +1,5 @@
 require 'puppet/parameter/boolean'
-require 'cumulus/utils'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'cumulus', 'utils.rb'))
 Puppet::Type.newtype(:cumulus_bond) do
   desc 'Configure bond interfaces on Cumulus Linux'
   include Cumulus::Utils
