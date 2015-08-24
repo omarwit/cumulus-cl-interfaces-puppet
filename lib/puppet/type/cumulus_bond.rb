@@ -150,8 +150,7 @@ Puppet::Type.newtype(:cumulus_bond) do
     end
   end
 
-
-newparam(:lacp_bypass_priority) do
+  newparam(:lacp_bypass_priority) do
     desc 'list of interfaces with their priority'
     munge do |value|
       @resource.munge_array(value)
