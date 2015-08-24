@@ -111,6 +111,12 @@ Puppet::Type.newtype(:cumulus_interface) do
     aware mode'
   end
 
+  newparam(:mstpctl_portadminedge,
+           boolean: false,
+           parent: Puppet::Parameter::Boolean) do
+    desc 'configures port adminedge.'
+  end
+
   newparam(:clagd_enable,
            boolean: true,
            parent: Puppet::Parameter::Boolean) do
