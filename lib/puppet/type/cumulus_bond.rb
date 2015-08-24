@@ -126,6 +126,37 @@ Puppet::Type.newtype(:cumulus_bond) do
     end
   end
 
+  newparam(:lacp_bypass_allow) do
+    desc 'allow bypass of lacp (unbond the interface)'
+    newvalues(0, 1)
+    munge do |value|
+      @resource.munge_integer(value)
+    end
+  end
+
+  newparam(:lacp_bypass_period) do
+    desc 'period in seconds to allow bypass 0-900'
+    newvalues(/^([0-8]?[0-9]?[0-9]?|900)$/)
+    munge do |value|
+      @resource.munge_integer(value)
+    end
+  end
+
+  newparam(:lacp_bypass_all_active) do
+    desc 'enable all-active mode for lacp bypass'
+    newvalues(0, 1)
+    munge do |value|
+      @resource.munge_integer(value)
+    end
+  end
+
+  newparam(:lacp_bypass_priority) do
+    desc 'list of interfaces with their priority'
+    munge do |value|
+      @resource.munge_array(value)
+    end
+  end
+
   newparam(:miimon) do
     desc 'mii link monitoring interval'
     defaultto 100
@@ -154,6 +185,11 @@ Puppet::Type.newtype(:cumulus_bond) do
     if self[:virtual_ip].nil? ^ self[:virtual_mac].nil?
       fail Puppet::Error, 'VRR parameters virtual_ip and virtual_mac must be
       configured together'
+    end
+
+    if self[:lacp_bypass_priority] && self[:lacp_bypass_all_active]
+      fail Puppet::Error, 'bypass_priority and bypass_all_active must not
+      be configured together'
     end
   end
 end
