@@ -31,6 +31,7 @@ describe 'interfaces' do
           virtual_ip             => '192.168.20.1',
           mstpctl_portnetwork    => true,
           mstpctl_bpduguard      => true,
+          mstpctl_portadminedge  => true,
           lacp_bypass_allow      => 1,
           lacp_bypass_period     => 30,
           lacp_bypass_all_active => 1,
@@ -86,6 +87,7 @@ describe 'interfaces' do
       its(:content) { should match(/address-virtual 11:22:33:44:55:FF 192.168.20.1/) }
       its(:content) { should match(/mstpctl-portnetwork yes/) }
       its(:content) { should match(/mstpctl-bpduguard yes/) }
+      its(:content) { should match(/mstpctl-portadminedge yes/) }
       its(:content) { should match(/bond-lacp-bypass-period 30/) }
       its(:content) { should match(/bond-lacp-bypass-all-active 1/) }
       its(:content) { should match(/bond-lacp-bypass-allow 1/) }

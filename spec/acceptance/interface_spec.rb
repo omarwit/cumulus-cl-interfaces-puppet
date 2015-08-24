@@ -21,24 +21,25 @@ describe 'interfaces' do
 
         # Over-ride defaults
         cumulus_interface { 'swp2':
-          ipv4                => ['192.168.200.1'],
-          ipv6                => ['2001:db8:5678::'],
-          #addr_method        => 'static',
-          speed               => '1000',
-          mtu                 => 9000,
+          ipv4                  => ['192.168.200.1'],
+          ipv6                  => ['2001:db8:5678::'],
+          #addr_method          => 'static',
+          speed                 => '1000',
+          mtu                   => 9000,
           # ifquery doesn't seem to like clagd related parameters on an interface?
-          # clagd_enable      => true
-          # clagd_priority    => 1
-          # clagd_peer_ip     => '10.1.2.3'
-          # clagd_sys_mac     => 'aa:bb:cc:dd:ee:ff'
-          vids                => ['1-4094'],
-          pvid                => 1,
-          alias_name          => 'interface swp2',
-          virtual_mac         => '11:22:33:44:55:66',
-          virtual_ip          => '192.168.10.1',
-          mstpctl_portnetwork => true,
-          mstpctl_bpduguard   => true,
-          notify              => Service['networking'],
+          # clagd_enable        => true
+          # clagd_priority      => 1
+          # clagd_peer_ip       => '10.1.2.3'
+          # clagd_sys_mac       => 'aa:bb:cc:dd:ee:ff'
+          vids                  => ['1-4094'],
+          pvid                  => 1,
+          alias_name            => 'interface swp2',
+          virtual_mac           => '11:22:33:44:55:66',
+          virtual_ip            => '192.168.10.1',
+          mstpctl_portnetwork   => true,
+          mstpctl_bpduguard     => true,
+          mstpctl_portadminedge => true,
+          notify                => Service['networking'],
         }
 
         file { '/etc/network/interfaces':
@@ -91,6 +92,7 @@ describe 'interfaces' do
       its(:content) { should match(/alias interface swp2/) }
       its(:content) { should match(/mstpctl-portnetwork yes/) }
       its(:content) { should match(/mstpctl-bpduguard yes/) }
+      its(:content) { should match(/mstpctl-portadminedge yes/) }
       its(:content) { should match(/address-virtual/) }
     end
   end
