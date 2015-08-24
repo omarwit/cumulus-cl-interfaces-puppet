@@ -5,7 +5,6 @@ require 'pry'
 hosts.each do |host|
   if host.name == 'cumulus-vx-2.5.3-puppet4'
     # Install 4.x from PuppetLabs
-    #on host, install_puppet
     on host, 'wget https://apt.puppetlabs.com/puppetlabs-release-pc1-wheezy.deb -O puppetlabs-release-pc1-wheezy.deb && dpkg -i puppetlabs-release-pc1-wheezy.deb'
     on host, 'apt-get update && apt-get install -y puppet-agent'
   else
