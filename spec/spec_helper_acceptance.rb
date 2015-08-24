@@ -1,9 +1,16 @@
 require 'beaker-rspec'
 require 'pry'
 
+# Install Puppet
 hosts.each do |host|
-  # Install Puppet
-  on host, 'apt-get update && apt-get install -y puppet'
+  if host.name == 'cumulus-vx-2.5.3-puppet4'
+    # Install 4.x from PuppetLabs
+    on host, 'wget https://apt.puppetlabs.com/puppetlabs-release-pc1-wheezy.deb -O puppetlabs-release-pc1-wheezy.deb && dpkg -i puppetlabs-release-pc1-wheezy.deb'
+    on host, 'apt-get update && apt-get install -y puppet-agent'
+  else
+    # Install 3.x FOSS from CL repository
+    on host, 'apt-get update && apt-get install -y puppet'
+  end
 end
 
 RSpec.configure do |c|
