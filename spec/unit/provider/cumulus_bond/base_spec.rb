@@ -20,6 +20,9 @@ describe provider_class do
       mstpctl_bpduguard: true,
       mstpctl_portnetwork: false,
       mtu: 9000,
+      lacp_bypass_allow: 1,
+      lacp_bypass_period: 30,
+      lacp_bypass_all_active: 1,
       slaves: ['bond0-3']
     )
     @provider = provider_class.new(@resource)
@@ -105,6 +108,18 @@ describe provider_class do
     context 'mtu' do
       subject { confighash['config']['mtu'] }
       it { is_expected.to eq '9000' }
+    end
+    context 'lacp bypass active' do
+      subject { confighash['config']['bond-lacp-bypass-all-active'] }
+      it { is_expected.to eq '1' }
+    end
+    context 'lacp bypass allow' do
+      subject { confighash['config']['bond-lacp-bypass-allow'] }
+      it { is_expected.to eq '1' }
+    end
+    context 'lacp bypass period' do
+      subject { confighash['config']['bond-lacp-bypass-period'] }
+      it { is_expected.to eq '30' }
     end
   end
 end

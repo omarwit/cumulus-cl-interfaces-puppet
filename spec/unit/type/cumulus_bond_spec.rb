@@ -19,7 +19,8 @@ describe cl_iface do
       :mstpctl_bpduguard,
       :clag_id,
       :mode, :miimon, :min_links, :lacp_rate,
-      :xmit_hash_policy
+      :xmit_hash_policy,
+      :lacp_bypass_allow, :lacp_bypass_period, :lacp_bypass_priority, :lacp_bypass_all_active
     ]
   end
 
