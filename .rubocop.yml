@@ -2,6 +2,6 @@ MethodLength:
   CountComments: false
   Max: 20
 ClassLength:
-  Max: 120
+  Enabled: false
 Metrics/LineLength:
   Enabled: false
