@@ -83,7 +83,8 @@ describe 'interfaces' do
       it { should be_file }
       # its(:content) { should match(/iface swp2 inet static/) }
       its(:content) { should match(/iface swp2/) }
-      its(:content) { should match(/address 192.168.200.1 2001:db8:5678::/) }
+      its(:content) { should match(/address 192.168.200.1/) }
+      its(:content) { should match(/address 2001:db8:5678::/) }
       its(:content) { should match(/mtu 9000/) }
       its(:content) { should match(/bridge-vids 1-4094/) }
       its(:content) { should match(/bridge-pvid 1/) }

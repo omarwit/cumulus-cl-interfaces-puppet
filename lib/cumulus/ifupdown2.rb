@@ -64,14 +64,18 @@ class Ifupdown2Config
   def build_address(addr_type)
     return nil.to_s if @resource[addr_type.to_sym].nil?
     Puppet.debug "updating #{addr_type} info #{@resource[:name]}"
-    @resource[addr_type.to_sym].join(' ')
+    @resource[addr_type.to_sym]
   end
 
   def update_address
-    addresslist = build_address('ipv4')
-    addresslist += ' ' + build_address('ipv6')
-    addresslist.strip!
+    ipv4_list = build_address('ipv4')
+    ipv6_list = build_address('ipv6')
+
+    addresslist = []
+    addresslist += ipv4_list unless ipv4_list.empty?
+    addresslist += ipv6_list unless ipv6_list.empty?
     return if addresslist.empty?
+
     @confighash['config']['address'] = addresslist
   end
 
