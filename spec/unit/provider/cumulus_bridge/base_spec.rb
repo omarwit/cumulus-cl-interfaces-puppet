@@ -94,7 +94,7 @@ describe provider_class do
     end
     context 'address options' do
       subject { confighash['config']['address'] }
-      it { is_expected.to eq '10.1.1.1/24 10:1:1::1/127' }
+      it { is_expected.to eq ['10.1.1.1/24', '10:1:1::1/127'] }
     end
     context 'addr_method' do
       subject { confighash['addr_method'] }
