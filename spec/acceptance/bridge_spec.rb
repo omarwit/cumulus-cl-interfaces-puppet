@@ -63,7 +63,9 @@ describe 'bridges' do
       its(:content) { should match(/bridge-stp no/) }
       its(:content) { should match(/mtu 9000/) }
       its(:content) { should match(/mstpctl-treeprio 4096/) }
-      its(:content) { should match(%r{address 10.0.0.1/24 192.168.1.0/16 2001:db8:abcd::/48}) }
+      its(:content) { should match(%r{address 10.0.0.1/24}) }
+      its(:content) { should match(%r{address 192.168.1.0/16}) }
+      its(:content) { should match(%r{address 2001:db8:abcd::/48}) }
     end
   end
 
@@ -132,7 +134,9 @@ describe 'bridges' do
       its(:content) { should match(/mstpctl-treeprio 4096/) }
       its(:content) { should match(/bridge-pvid 1/) }
       its(:content) { should match(/bridge-vids 1-4094/) }
-      its(:content) { should match(%r{address 10.0.100.1/24 192.168.100.0/16 2001:db8:1234::/48}) }
+      its(:content) { should match(%r{address 10.0.100.1/24}) }
+      its(:content) { should match(%r{address 192.168.100.0/16}) }
+      its(:content) { should match(%r{address 2001:db8:1234::/48}) }
     end
   end
 end
