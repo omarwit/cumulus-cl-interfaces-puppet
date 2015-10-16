@@ -143,6 +143,11 @@ class Ifupdown2Config
   def write_config
     Puppet.info "write config for #{@resource[:name]}"
     intf = hash_to_if
+    if intf.empty?
+      Puppet.err "ifquery could not interpret config #{@confighash}" \
+        "into ifupdown2 text. Not modifying #{@resource[:name]} config"
+      return
+    end
     filepath = @resource[:location] + '/' + @resource[:name]
     Puppet.debug "file location: #{filepath}"
     begin

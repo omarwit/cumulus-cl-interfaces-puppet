@@ -37,6 +37,25 @@ describe provider_class do
     it { is_expected.to eq ['cumuluslinux'] }
   end
 
+  context 'ifquery fails to output any text. This should not happen' do
+    let(:config) { @provider.instance_variable_get('@config') }
+    before do
+      allow(Puppet).to receive(:err).and_return('')
+      mock_ifquery = double
+      allow(mock_ifquery).to receive(:write).and_return('')
+      allow(mock_ifquery).to receive(:close_write).and_return('')
+      allow(mock_ifquery).to receive(:close).and_return('')
+      allow(mock_ifquery).to receive(:read).and_return('')
+      allow(IO).to receive(:popen).and_yield(mock_ifquery)
+      @provider.build_desired_config
+    end
+    it do
+      expect(File).not_to receive(:open)
+      expect(Puppet).to receive(:err)
+      config.write_config
+    end
+  end
+
   context 'config changed' do
     before do
       @loc_resource = provider_resource.new(
