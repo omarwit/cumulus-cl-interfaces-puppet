@@ -81,6 +81,9 @@ class Ifupdown2Config
     addresslist = []
     addresslist += ipv4_list unless ipv4_list.empty?
     addresslist += ipv6_list unless ipv6_list.empty?
+    # ifquery sets hash value to a string if address list length == 1
+    # otherwise it sets it to an array
+    addresslist = addresslist.length == 1 ? addresslist.join : addresslist
     return if addresslist.empty?
 
     @confighash['config']['address'] = addresslist
