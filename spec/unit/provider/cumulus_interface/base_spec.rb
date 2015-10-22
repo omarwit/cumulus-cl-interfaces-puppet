@@ -62,7 +62,47 @@ describe provider_class do
         name: 'swp1',
         vids: ['1-10', '20'])
     end
-    context 'config has changed' do
+    context 'has not changed witih single ip address post 2.5.4' do
+      before do
+        @loc_resource = provider_resource.new(
+          name: 'swp1',
+          ipv4: '10.1.1.1/24'
+        )
+        # needed to ensure that if_to_hash() exists to get @config.currenthash
+        allow(File).to receive(:exist?).and_return(true)
+
+        current_hash = "[{ \"auto\":true,\"name\": \"swp1\",
+          \"config\":{\"address\":\"10.1.1.1/24\"}}]"
+        mock_ifquery = double
+        allow(mock_ifquery).to receive(:read).and_return(current_hash)
+        allow(IO).to receive(:popen).and_yield(mock_ifquery)
+        @loc_provider = provider_class.new(@loc_resource)
+      end
+      subject { @loc_provider.config_changed? }
+      it { is_expected.to be false }
+    end
+
+    context 'has not changed with single ip address pre 2.5.4' do
+      before do
+        @loc_resource = provider_resource.new(
+          name: 'swp1',
+          ipv4: '10.1.1.1/24'
+        )
+        # needed to ensure that if_to_hash() exists to get @config.currenthash
+        allow(File).to receive(:exist?).and_return(true)
+
+        current_hash = "[{ \"addr_method\": null,\"auto\":true,\"addr_family\":null,\"name\":
+        \"swp1\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
+        mock_ifquery = double
+        allow(mock_ifquery).to receive(:read).and_return(current_hash)
+        allow(IO).to receive(:popen).and_yield(mock_ifquery)
+        @loc_provider = provider_class.new(@loc_resource)
+      end
+      subject { @loc_provider.config_changed? }
+      it { is_expected.to be false }
+    end
+
+    context 'has changed' do
       before do
         current_hash = "[{\"addr_family\":null,\"name\":
         \"swp1\",\"config\":{\"address\":\"10.1.1.1/24\"}}]"
@@ -75,7 +115,21 @@ describe provider_class do
       it { is_expected.to be true }
     end
 
-    context 'config has not changed' do
+    context 'has not changed post 2.5.4' do
+      before do
+        allow(File).to receive(:exist?).and_return(true)
+        current_hash = "[{\"auto\":true,\"name\":\"swp1\",\"config\":{
+        \"bridge-vids\":\"1-10 20\"}}]"
+        mock_ifquery = double
+        allow(mock_ifquery).to receive(:read).and_return(current_hash)
+        allow(IO).to receive(:popen).and_yield(mock_ifquery)
+        @loc_provider = provider_class.new(@loc_resource)
+      end
+      subject { @loc_provider.config_changed? }
+      it { is_expected.to be false }
+    end
+
+    context 'config has not changed pre 2.5.4' do
       before do
         allow(File).to receive(:exist?).and_return(true)
         current_hash = "[{\"auto\":true, \"addr_method\":null,
