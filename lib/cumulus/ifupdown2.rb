@@ -30,8 +30,15 @@ class Ifupdown2Config
     Puppet.warning("ifquery failed: #{ex}")
   end
 
+  # before 2.5.4 null entries where left in place in hash
+  # in 2.5.4 and higher null entries were removed
+  def remove_nil_entries(myhash)
+    myhash.delete_if { |_key, value| value.nil? }
+  end
+
   def compare_with_current
-    @confighash == @currenthash
+    remove_nil_entries(@confighash) ==
+      remove_nil_entries(@currenthash)
   end
 
   ##
@@ -74,6 +81,9 @@ class Ifupdown2Config
     addresslist = []
     addresslist += ipv4_list unless ipv4_list.empty?
     addresslist += ipv6_list unless ipv6_list.empty?
+    # ifquery sets hash value to a string if address list length == 1
+    # otherwise it sets it to an array
+    addresslist = addresslist.length == 1 ? addresslist.join : addresslist
     return if addresslist.empty?
 
     @confighash['config']['address'] = addresslist
@@ -133,9 +143,9 @@ class Ifupdown2Config
     @confighash['config'][ifupdown_attr] = result.join(' ')
   end
 
-  ## comparision
   def ==(other)
-    @confighash == other.confighash
+    remove_nil_entries(@confighash) ==
+      remove_nil_entries(other.confighash)
   end
 
   # convert hash to text using ifquery
@@ -143,6 +153,11 @@ class Ifupdown2Config
   def write_config
     Puppet.info "write config for #{@resource[:name]}"
     intf = hash_to_if
+    if intf.empty?
+      Puppet.err "ifquery could not interpret config #{@confighash}" \
+        "into ifupdown2 text. Not modifying #{@resource[:name]} config"
+      return
+    end
     filepath = @resource[:location] + '/' + @resource[:name]
     Puppet.debug "file location: #{filepath}"
     begin
